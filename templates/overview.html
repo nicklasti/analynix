@@ -1,0 +1,113 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Analynix</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'style7.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <section class="section">
+        <div class="row">
+            <div class="col-md-6 ml-2 mr-2 mt-2">
+                <div class="card">
+                    <div class="card-body pl-2 pt-2">
+                        <h4>{{companyName}}&nbsp&nbsp{{ticker}}</h4>
+                        <h6><span class="bolded">Sector:</span>&nbsp{{sector}}&nbsp</h6>
+                        <h6><span class="bolded">Industry:</span>&nbsp{{industry}}</h6>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
+        <div class="row">
+            <div class="col-md-6 ml-2 mr-2 mt-2">
+                <div class="card">
+                    <div class="card-body pl-2 pt-2">
+                        <h5 class="card-title">Company Size</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th scope="col">Mkt Cap</th>
+                                    <th scope="col">Mkt Share</th>
+                                    <th scope="col">Avg Cap</th>
+                                    <th scope="col">Ind Size</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>${{mktCapD}}</td>
+                                    <td>{{mktSharePct}}</td>
+                                    <td>${{avgCap}}</td>
+                                    <td>${{indSize}}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 ml-2 mt-2 mr-2">
+                <div class="card">
+                    <div class="card-body pl-2 pt-2">
+                        <h5 class="card-title">Income Statement</h5>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th scope="col"></th>
+                                    <th scope="col">{{ticker}}</th>
+                                    <th scope="col">Ind Avg</th>
+                                    <th scope="col">Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Revenue</td>
+                                    <td>${{revenueD}}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Revenue Growth (Q/Q)</td>
+                                    <td>{{revGrwthD}}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Earnings</td>
+                                    <td>${{profitD}}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Profit Margin</td>
+                                    <td>{{profitMarginD}}</td>
+                                    <td></td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <script src="{% static 'jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+    <script src="{% static 'scripts.js' %}"></script>
+</body>
+
+</html>

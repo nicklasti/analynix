@@ -1,0 +1,14 @@
+body {
+    background-color: #ac199f;
+}
+
+p {
+    font-family: verdana;
+    font-size: 14px;
+    border-style: dashed;
+    border-width: 2px;
+    border-color: #d40c0c;
+    color: rgb(13, 117, 44);
+    background-color: #3a37e0;
+    padding: 2px 2px 2px 2px;
+}

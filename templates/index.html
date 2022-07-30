@@ -1,0 +1,28 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Analynix</title>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" >
+    <link rel="stylesheet" href="{% static 'style.css' %}" >
+</head>
+
+<body>
+    <p>Input Ticker</p>
+
+    <form method="GET" action="overview">
+        <textarea name="text" rows="25" cols="100"></textarea><br>
+        <input type="submit">
+    </form>
+
+</body>
