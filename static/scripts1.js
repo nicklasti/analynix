@@ -7,4 +7,4 @@ input.addEventListener('keyup', (e) => {
             e.preventDefault()
             console.log('submit')
         }
-    };
+    };)

@@ -7,4 +7,13 @@ input.addEventListener('keyup', (e) => {
             e.preventDefault()
             console.log('submit')
         }
-    };
+    }
+);
+
+registerForm.addEventListener('keyup', (e) => {
+        if(e.keyCode === 13) {
+            e.preventDefault();
+            registerForm.submit();
+        }
+    }
+);

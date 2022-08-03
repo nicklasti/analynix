@@ -3,7 +3,26 @@ from django.http import HttpResponse
 import yfinance as yf
 from urllib.request import Request, urlopen
 import re
+import yahoo_fin
+from yahoo_fin import options
+from yahoo_fin import stock_info
+import pandas_datareader as pdr
+import pandas_datareader.data as web
+from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import relativedelta
+import datetime
+from datetime import datetime
+from datetime import date
+from datetime import time
 
+today = date.today()
+date_1y = datetime.now() - relativedelta(years=1)
+date_2y = datetime.now() - relativedelta(years=2)
+date_3y = datetime.now() - relativedelta(years=3)
+date_5y = datetime.now() - relativedelta(years=5)
+date_10y = datetime.now() - relativedelta(years=10)
+date_250y = datetime.now() - relativedelta(years=250)
+date_ytd = datetime(today.year, 1,1)
 
 def index(request):
     return render(request, 'index.html')
@@ -244,4 +263,73 @@ def overview(request):
     
     # formats net income
 
-    return render(request, 'overview.html', {'companyName': companyName, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mktCapD': mktCapD, 'bookValue': bookValue, 'revenueD': revenueD, 'profitD': profitD, 'sector': sector, 'indSize': indSize, 'mktSharePct': mktSharePct, 'avgCap': avgCap, 'profitMarginD':  profitMarginD, 'revGrwthD': revGrwthD})
+    today = date.today()
+    date_1y = datetime.now() - relativedelta(years=1)
+    date_2y = datetime.now() - relativedelta(years=2)
+    date_3y = datetime.now() - relativedelta(years=3)
+    date_5y = datetime.now() - relativedelta(years=5)
+    date_10y = datetime.now() - relativedelta(years=10)
+    date_250y = datetime.now() - relativedelta(years=250)
+    date_ytd = datetime(today.year, 1,1)
+
+    df1 = pdr.data.get_data_yahoo(ticker, start='1970-1-1', end=today)
+    pryce = df1['Close']
+    pryce = pryce.values.tolist()
+
+    df1 = pdr.data.get_data_yahoo(ticker, start='1970-1-1', end=today)
+    deight1 = df1['Close']
+    deight = deight1.index.tolist()
+    deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
+
+    date_max = deight[0]
+
+    df1 = pdr.data.get_data_yahoo(ticker, start=date_max, end=today)
+    pryce = df1['Close']
+    pryce = pryce.values.tolist()
+
+    df1 = pdr.data.get_data_yahoo(ticker, start=date_max, end=today)
+    deight1 = df1['Close']
+    deight = deight1.index.tolist()
+    deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
+
+    import plotly.graph_objects as go
+    from plotly.offline import plot
+    import pandas as pd
+    import requests
+
+    def line():
+        figure = go.Figure(
+            data = [
+                go.Line(
+                    x = deight,
+                    y = pryce
+                )
+            ]
+        )
+
+        figure.update_xaxes(rangeslider_visible=True, 
+                            rangeselector=dict(
+        buttons=list([
+            dict(count=1, label="1m", step="month", stepmode="backward"),
+            dict(count=6, label="6m", step="month", stepmode="backward"),
+            dict(count=1, label="YTD", step="year", stepmode="todate"),
+            dict(count=1, label="1y", step="year", stepmode="backward"),
+            dict(step="all")
+        ]) ,
+
+        font_color="black"
+    ))
+
+        figure.update_layout(plot_bgcolor='#0f0f0f', paper_bgcolor ='#0f0f0f', font_color="white", title_font_color="white")
+
+        figure.update_traces(line_color="white")
+
+        figure.update_xaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#222121')
+
+        figure.update_yaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#222121')
+
+        line_div = plot(figure, output_type='div')
+        return line_div
+
+
+    return render(request, 'overview.html', {'companyName': companyName, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mktCapD': mktCapD, 'bookValue': bookValue, 'revenueD': revenueD, 'profitD': profitD, 'sector': sector, 'indSize': indSize, 'mktSharePct': mktSharePct, 'avgCap': avgCap, 'profitMarginD':  profitMarginD, 'revGrwthD': revGrwthD, 'deight': deight, 'pryce': pryce, 'line': line()})
