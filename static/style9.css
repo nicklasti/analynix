@@ -20,3 +20,9 @@ body {
     color: #ffffff;
 }
 
+.enterbox {
+    max-width: 1000px;
+    height: 600px;
+    background-color: #0f0f0f;
+    color:white
+}

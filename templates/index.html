@@ -14,26 +14,18 @@
     <meta name="author" content="LayoutIt!">
 
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" >
-    <link rel="stylesheet" href="{% static 'style.css' %}" >
+    <link rel="stylesheet" href="{% static 'style9.css' %}" >
 </head>
 
 <body>
-    
-    <p>Input Ticker</p>
-
-    <form id="registerForm" method="GET" action="overview">
-        <textarea onFocus="this.select()", autofocus="autofocus", name="text" rows="25" cols="100"></textarea><br>
-        <input type="submit">
-    </form>
-
-    <div class="container">
-        <input type="text" id="text">
-        <button id="submit" onclick="Alert()">Submit</button>
+    <div class="container enterbox d-flex align-items-center justify-content-center">
+        <h2>Enter ticker symbol:</h2>
+        <form id="registerForm" method="GET" action="overview">
+            <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
+        </form>
     </div>
 
-    <script src="{% static 'enter.js' %}"></script>
     <script src="{% static 'scripts4.js' %}"></script>
-
 </body>
 
 </html>
