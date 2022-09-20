@@ -11,6 +11,8 @@ class IndustryInfo(models.Model):
     avg_eps = models.FloatField(default=69.69)
     avg_fwdpe  = models.FloatField(default=69.69)
     avg_pb = models.FloatField(default=69.69)
+    ind_size = models.FloatField(default=69.69)
+    avg_mkt_cap = models.FloatField(default=69.69)
 
 class StockInfo(models.Model):
     ticker = models.TextField(default='default')

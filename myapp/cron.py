@@ -104,8 +104,9 @@ def get_avg_pe_step2(industry):
             avg_fwdpe = round(statistics.mean(fwdpe_list2),2)
             avg_mkt_cap = round(statistics.mean(mkt_cap_list2),2)
             ind_size = sum(mkt_cap_list2)
+            IndustryInfo.objects.filter(name=industry).update(avg_pe=avg_pe,avg_ps=avg_ps,avg_pb=avg_pb,avg_eps=avg_eps,avg_fwdpe=avg_fwdpe,avg_mkt_cap=avg_mkt_cap,ind_size=ind_size)
             ticker_list = df['Ticker']
-            for xxxx in ticker_list:
+            for stock_ticker in ticker_list:
                 stock == None
                 ticker == None
                 sector == None
@@ -131,11 +132,12 @@ def get_avg_pe_step2(industry):
                 short_float == None
                 while stock == None or sector == None or company_name == None or beta == None or pb == None or ps == None or pe == None or fwdpe == None or eps == None or mkt_cap_short == None or mkt_cap == None or revenue_short == None or revenue == None or profit_short == None or profit == None or profit_margin == None or profit_margin_float == None or rev_growth == None or rev_growth_float == None or avg_volume == None or shares_float == None or short_float == None:
                     try:
-                        stock = finvizfinance(xxxx).ticker_fundament()
+                        stock = finvizfinance(stock_ticker).ticker_fundament()
+                        time.sleep(5)
                         # Stores the basic stock data as a variable
                         sector = stock['Sector']
                         # Gets the sector
-                        ticker = xxxx
+                        ticker = stock['Ticker']
                         # Gets the ticker
                         company_name = stock['Company']
                         # Gets the company name
@@ -169,12 +171,9 @@ def get_avg_pe_step2(industry):
                         shares_float = stock['Shs Float']
                         short_float = stock['Short Float']
                         # gets revenue growth
-                        IndustryInfo.objects.update_or_create(ticker=ticker,industry=industry, sector=sector, company_name=company_name,beta=beta,pb=pb,ps=ps,pe=pe,fwdpe=fwdpe,eps=eps,mkt_cap_short=mkt_cap_short,mkt_cap=mkt_cap,revenue_short=revenue_short,revenue=revenue, profit_short=profit_short,profit=profit,profit_margin=profit_margin, profit_margin_float=profit_margin_float, rev_growth=rev_growth, rev_growth_float=rev_growth_float,avg_volume=avg_volume,shares_float=shares_float,short_float=short_float)
-                        time.sleep(5)
+                        StockInfo.objects.update_or_create(ticker=stock_ticker,industry=industry, sector=sector, company_name=company_name,beta=beta,pb=pb,ps=ps,pe=pe,fwdpe=fwdpe,eps=eps,mkt_cap_short=mkt_cap_short,mkt_cap=mkt_cap,revenue_short=revenue_short,revenue=revenue, profit_short=profit_short,profit=profit,profit_margin=profit_margin, profit_margin_float=profit_margin_float, rev_growth=rev_growth, rev_growth_float=rev_growth_float,avg_volume=avg_volume,shares_float=shares_float,short_float=short_float)
                     except Exception:
                         time.sleep(15)
-            IndustryInfo.objects.filter(name=industry).update(avg_pe=avg_pe,avg_ps=avg_ps,avg_pb=avg_pb,avg_eps=avg_eps,avg_fwdpe=avg_fwdpe)
-            time.sleep(5)
         except Exception:
             time.sleep(30)
 
