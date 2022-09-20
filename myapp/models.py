@@ -1,8 +1,10 @@
+
+# Creates objects in the Sqlite3 Daztabase
+
 from pickle import TRUE
 from unicodedata import name
 from django.db import models
 from logging.config import IDENTIFIER
-# Create your models here.
 
 class IndustryInfo(models.Model):
     name = models.TextField(default='default')

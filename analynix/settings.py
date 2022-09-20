@@ -159,5 +159,5 @@ CACHES = {
 }
 
 CRONJOBS = [
-    ('*/5 * * * *', 'myapp.cron.get_avg_pe')
+    ('0 0 * * *','myapp.cron.cronjob_every_midnight'),('025 19 * * *', 'myapp.cron.cronjob_every_1am')
 ]
