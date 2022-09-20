@@ -14,22 +14,36 @@
     <meta name="author" content="LayoutIt!">
 
     <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'style9.css' %}" rel="stylesheet">
+    <link href="{% static 'style10.css' %}" rel="stylesheet">
 
 </head>
 
 <body>
 
+    <div class="topnav">
+        <a class="active" href="#home">Analynix</a>
+        <a href="#about">About</a>
+        <a href="#contact">Contact</a>
+        <div class="search-container">
+            <form id="registerForm" method="GET" action="overview">
+                <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
+            </form>
+        </div>
+      </div>
+
     <section class="section">
-        <div class="row">
+        <div class="row p-3 m-2">
             <div class="col-md-6 ">
                 <div class="card-text-white bg-dark">
-                    <div class="card-body pl-2 pt-2">
+                    <div class="card-body p-2 p-2">
                         <div class="darktheme">
-                            <h4>{{companyName}}&nbsp&nbsp{{ticker}}</h4>
-                            <h6><span class="bolded">Sector:</span>&nbsp{{sector}}&nbsp</h6>
-                            <h6><span class="bolded">Industry:</span>&nbsp{{industry}}</h6>
-                            <h5 class="card-title">Company Size</h5>
+                            <h4 class="bolded" style="color: teal;">{{company_name}}&nbsp&nbsp{{ticker}}</h4>
+                            <h6 style="color:black;"><span class="bolded">Sector:</span>&nbsp{{sector}}&nbsp</h6>
+                            <h6 style="color:black"><span class="bolded">Industry:</span>&nbsp{{industry}}</h6>
+                            {% autoescape off %}
+                            {{line}}
+                            {% endautoescape %}
+                            <h5 class="card-title" style="color: teal;">Company Size</h5>
                             <table class="table">
                                 <thead>
                                     <tr>
@@ -41,10 +55,29 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>${{mktCapD}}</td>
-                                        <td>{{mktSharePct}}</td>
-                                        <td>${{avgCap}}</td>
-                                        <td>${{indSize}}</td>
+                                        <td>${{mkt_cap_short}}</td>
+                                        <td></td>
+                                        <td>$</td>
+                                        <td>$</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <h5 class="card-title" style="color: teal;">Shares</h5>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Shares Float</th>
+                                        <th scope="col">Avg Volume</th>
+                                        <th scope="col">Short Float</th>
+                                        <th scope="col"></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>{{shares_float}}</td>
+                                        <td>{{avg_volume}}</td>
+                                        <td>{{short_float}}</td>
+                                        <td></td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -54,9 +87,9 @@
             </div>
             <div class="col-md-6">
                 <div class="card-text-white bg-dark">
-                    <div class="card-body pl-2 pt-2">
+                    <div class="card-body p-2 p-2">
                         <div class="darktheme">
-                            <h5 class="card-title">Income Statement</h5>
+                            <h5 class="card-title" style="color: teal;">Income Statement</h5>
                             <table class="table table-hover">
                                 <thead>
                                     <tr>
@@ -69,34 +102,73 @@
                                 <tbody>
                                     <tr>
                                         <td>Revenue</td>
-                                        <td>${{revenueD}}</td>
+                                        <td>${{revenue_short}}</td>
                                         <td></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td>Revenue Growth (Q/Q)</td>
-                                        <td>{{revGrwthD}}</td>
+                                        <td>{{rev_growth}}</td>
                                         <td></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td>Earnings</td>
-                                        <td>${{profitD}}</td>
+                                        <td>${{profit}}</td>
                                         <td></td>
                                         <td></td>
                                     </tr>
                                     <tr>
                                         <td>Profit Margin</td>
-                                        <td>{{profitMarginD}}</td>
+                                        <td>{{profit_margin}}</td>
                                         <td></td>
                                         <td></td>
                                     </tr>
                                 </tbody>
                             </table>
-                            {% autoescape off %}
-                            {{line}}
-                            {% endautoescape %}
-
+                            <h5 class="card-title" style="color: teal;">Market Valuation</h5>
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th scope="col"></th>
+                                        <th scope="col">{{ticker}}</th>
+                                        <th scope="col">Ind Avg</th>
+                                        <th scope="col">Grade</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>P/E</td>
+                                        <td>{{pe}}</td>
+                                        <td>{{avg_pe}}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Fwd P/E</td>
+                                        <td>{{fwdpe}}</td>
+                                        <td>{{avg_fwdpe}}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>EPS</td>
+                                        <td>{{eps}}</td>
+                                        <td>{{avg_eps}}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>P/S</td>
+                                        <td>{{ps}}</td>
+                                        <td>{{avg_ps}}</td>
+                                        <td></td>
+                                    </tr>
+                                    <tr>
+                                        <td>P/B</td>
+                                        <td>{{pb}}</td>
+                                        <td>{{avg_pb}}</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
                         </div>
                     </div>
                 </div>

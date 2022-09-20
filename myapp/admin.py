@@ -2,5 +2,5 @@ from django.contrib import admin
 
 
 # Register your models here.
-from .models import stockChart
-admin.site.register(stockChart)
+from myapp.models import IndustryInfo
+admin.site.register(IndustryInfo)

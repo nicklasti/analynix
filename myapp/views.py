@@ -1,3 +1,5 @@
+from audioop import avg
+from unicodedata import name
 from django.shortcuts import render
 from django.http import HttpResponse
 import yfinance as yf
@@ -9,12 +11,21 @@ from yahoo_fin import stock_info
 import pandas_datareader as pdr
 import pandas_datareader.data as web
 from dateutil.relativedelta import relativedelta
-from dateutil.relativedelta import relativedelta
 import datetime
 from datetime import datetime
 from datetime import date
 from datetime import time
-
+from finvizfinance.quote import finvizfinance
+from finvizfinance.screener.overview import Overview
+import math
+import statistics
+import time
+import plotly.graph_objects as go
+from plotly.offline import plot
+import pandas as pd
+import requests
+from myapp.models import IndustryInfo
+# Imports necessary packages
 today = date.today()
 date_1y = datetime.now() - relativedelta(years=1)
 date_2y = datetime.now() - relativedelta(years=2)
@@ -23,290 +34,87 @@ date_5y = datetime.now() - relativedelta(years=5)
 date_10y = datetime.now() - relativedelta(years=10)
 date_250y = datetime.now() - relativedelta(years=250)
 date_ytd = datetime(today.year, 1,1)
-
+# Creates date choices for the chart
+DOLLAR_MAPPING = {
+    'T': float(1000000000000),
+    'B': float(1000000000),
+    'M': float(1000000),
+    'K': float(1000),
+    'e': float(0)
+}
+# Helps create floats from shortened long numbers
+def fix_dashes(x):
+        if x == '-':
+            x = ''
+            return x
+        else:
+            x = round(float(x),2)
+            return x
+    # Gets rid of the dash for - values
 def index(request):
     return render(request, 'index.html')
-    # renders the index
-
-
+    # Renders the index
 def overview(request):
-
     text = request.GET['text']
-    # pulls the ticker from the index.html form
-
-    stock = yf.Ticker(text)
-    # assigns the yf stock ticker interpreter function to a variable
-
-    ticker = stock.info['symbol']
-    # gets the ticker
-
-    companyName = stock.info['longName']
-    # gets the company name
-
-    industry = stock.info['sector']
-    # gets the SECTOR
-
-    beta = round(stock.info['beta'], 2)
-    # gets the beta
-
-    mktCap = stock.info['marketCap']
-    # gets the market cap
-
-    if len(str(mktCap)) == 15:
-        mktCapD = str(str(round(float(mktCap), -9))
-                      [:3])+'.'+str(str(round(float(mktCap), -9))[3:5]+'T')
-    if len(str(mktCap)) == 14:
-        mktCapD = str(str(round(float(mktCap), -9))
-                      [:2])+'.'+str(str(round(float(mktCap), -9))[2:4]+'T')
-    if len(str(mktCap)) == 13:
-        mktCapD = str(str(round(float(mktCap), -9))
-                      [:1])+'.'+str(str(round(float(mktCap), -9))[1:3]+'T')
-    elif len(str(mktCap)) == 12:
-        mktCapD = str(str(round(float(mktCap), -7))
-                      [:3])+'.'+str(str(round(float(mktCap), -7))[3:5]+'B')
-    elif len(str(mktCap)) == 11:
-        mktCapD = str(str(round(float(mktCap), -7))
-                      [:2])+'.'+str(str(round(float(mktCap), -7))[2:4]+'B')
-    elif len(str(mktCap)) == 10:
-        mktCapD = str(str(round(float(mktCap), -7))
-                      [:1])+'.'+str(str(round(float(mktCap), -7))[1:3]+'B')
-    elif len(str(mktCap)) == 9:
-        mktCapD = str(str(round(float(mktCap), -4))
-                      [:3])+'.'+str(str(round(float(mktCap), -4))[3:5]+'M')
-    elif len(str(mktCap)) == 8:
-        mktCapD = str(str(round(float(mktCap), -4))
-                      [:2])+'.'+str(str(round(float(mktCap), -4))[2:4]+'M')
-    elif len(str(mktCap)) == 7:
-        mktCapD = str(str(round(float(mktCap), -4))
-                      [:1])+'.'+str(str(round(float(mktCap), -4))[1:3]+'M')
-    elif len(str(mktCap)) < 7:
-        mktCapD = (format(int(mktCap), ',d'))
-    # formats short number mil bil tril for market cap
-
-    bookValue = stock.info['bookValue']*stock.info['sharesOutstanding']
-    # gets the book value
-
-    revenue = stock.info['totalRevenue']
+    # Pulls the ticker from the index.html form
+    stock = finvizfinance(text).ticker_fundament()
+    # Stores the basic stock data as a variable
+    industry = stock['Industry']
+    # Gets the industry
+    sector = stock['Sector']
+    # Gets the sector
+    ticker = text.upper()
+    # Gets the ticker
+    company_name = stock['Company']
+    # Gets the company name
+    beta = stock['Beta']
+    beta = fix_dashes(beta)
+    pb = stock['P/B']
+    pb = fix_dashes(pb)
+    ps = stock['P/S']
+    ps = fix_dashes(ps)
+    pe = stock['P/E']
+    pe = fix_dashes(pe)
+    fwdpe = stock['Forward P/E']
+    fwdpe = fix_dashes(fwdpe)
+    eps = stock['EPS (ttm)']
+    eps = fix_dashes(eps)
+    #
+    mkt_cap_short = stock['Market Cap']
+    mkt_cap = float(mkt_cap_short[:-1]) * float(DOLLAR_MAPPING[mkt_cap_short[-1]])
+    #gets mkt cap
+    revenue_short = stock['Sales']
+    revenue = float(revenue_short[:-1]) * float(DOLLAR_MAPPING[revenue_short[-1]])
     # gets the sales
-
-    profit = stock.info['netIncomeToCommon']
+    profit = stock['Income']
     # gets the net income
-
-    profitMargin = profit/revenue
+    profit_margin = stock['Profit Margin']
     # gets the PM
-
-    profitMarginD = round(profitMargin, 2)
-    # formats the PM
-
-    revGrwth = stock.info['revenueGrowth']
-    revGrwthD = round(float(revGrwth), 5)
-    revGrwthD = str(revGrwthD)
-    revGrwthD = (revGrwthD[2:4] + '.' + revGrwthD[4:6] + '%')
+    rev_growth = stock['Sales Q/Q']
+    avg_volume = stock['Avg Volume']
+    shares_float = stock['Shs Float']
+    short_float = stock['Short Float']
     # gets revenue growth
 
-    req = Request('https://finviz.com/quote.ashx?t='+ticker,
-                  headers={'User-Agent': 'Mozilla/5.0'})
-    webpage = urlopen(req).read().decode('utf-8')
-    content = re.findall(
-        '(?<=class="tab-link").*?(?=</a>)', webpage, re.DOTALL)
-    sector = content[2]
-    sector = sector[1:]
-    sector = sector.strip()
-    # gets the sector
-
-    req2 = Request('https://finviz.com/groups.ashx?g=industry&v=120&o=name',
-                   headers={'User-Agent': 'Mozilla/5.0'})
-    webpage2 = urlopen(req2).read().decode('utf-8')
-    indSize = re.findall(
-        '(?<='+sector+').*?(?=class="body-table")(.*?)(?=</td>)', webpage2, re.DOTALL)
-    indSize = re.findall('[0-9.]+.', str(indSize))
-    indSize = re.sub(r"\['(.*)'\]", r"\1", str(indSize))
-    # gets the industry market cap for display
-
-    indSizeFloat = float(indSize[:-1])*1000000000
-    # gets the industry market cap as a float
-
-    sector2 = sector.lower()
-    sector2 = sector2.replace(" ", "")
-    sector2 = sector2.replace("&","")
-    sector2 = sector2.replace("-", "")
-    req3 = Request('https://finviz.com/screener.ashx?f=ind_' +
-                   sector2+'&v=121', headers={'User-Agent': 'Mozilla/5.0'})
-    webpage3 = urlopen(req3).read().decode('utf-8')
-    sectorCount = re.findall(
-        '(?<=<b>Total: </b>).*?(?=#)', webpage3, re.DOTALL)
-    sectorCount = re.findall('[0-9.]+.', str(sectorCount))
-    sectorCount = re.sub(r"\['(.*)'\]", r"\1", str(sectorCount))
-    sectorCount = float(sectorCount)
-    # counts how many companies are listed in that sector
-
-    avgCapFloat = indSizeFloat / sectorCount
-    # gets the average industry market cap float
-
-    avgCapInt = re.findall('([0-9].*)\.', str(avgCapFloat))
-    # gets rid of the decimal place numbers
-
-    avgCap = re.sub(r"\['(.*)'\]", r"\1", str(avgCapInt))
-    # gets rid of ['']
-
-    if len(str(avgCap)) == 15:
-        avgCap = str(str(round(float(avgCap), -9))
-                     [:3])+'.'+str(str(round(float(avgCap), -9))[3:5]+'T')
-    if len(str(avgCap)) == 14:
-        avgCap = str(str(round(float(avgCap), -9))
-                     [:2])+'.'+str(str(round(float(avgCap), -9))[2:4]+'T')
-    if len(str(avgCap)) == 13:
-        avgCap = str(str(round(float(avgCap), -9))
-                     [:1])+'.'+str(str(round(float(avgCap), -9))[1:3]+'T')
-    elif len(str(avgCap)) == 12:
-        avgCap = str(str(round(float(avgCap), -7))
-                     [:3])+'.'+str(str(round(float(avgCap), -7))[3:5]+'B')
-    elif len(str(avgCap)) == 11:
-        avgCap = str(str(round(float(avgCap), -7))
-                     [:2])+'.'+str(str(round(float(avgCap), -7))[2:4]+'B')
-    elif len(str(avgCap)) == 10:
-        avgCap = str(str(round(float(avgCap), -7))
-                     [:1])+'.'+str(str(round(float(avgCap), -7))[1:3]+'B')
-    elif len(str(avgCap)) == 9:
-        avgCap = str(str(round(float(avgCap), -4))
-                     [:3])+'.'+str(str(round(float(avgCap), -4))[3:5]+'M')
-    elif len(str(avgCap)) == 8:
-        avgCap = str(str(round(float(avgCap), -4))
-                     [:2])+'.'+str(str(round(float(avgCap), -4))[2:4]+'M')
-    elif len(str(avgCap)) == 7:
-        avgCap = str(str(round(float(avgCap), -4))
-                     [:1])+'.'+str(str(round(float(avgCap), -4))[1:3]+'M')
-    elif len(str(avgCap)) < 7:
-        avgCap = (format(int(avgCap), ',d'))
-    # formats short number mil bil tril for industry average market cap
-
-    mktCapFloat = float(mktCap)
-    # market cap float
-
-    mktShareFloat = mktCapFloat / indSizeFloat
-    # market share float
-
-    if len(indSize) >= 8:
-        indSize = str(str(round(indSizeFloat, -10))
-                      [:1]+'.'+str(round(indSizeFloat, -10))[1:3]+'T')
-    elif len(indSize) < 8:
-        indSize = indSize
-    # fixes trillions
-
-    mktSharePct = re.findall('[0-9].+', str(mktShareFloat))
-    mktSharePct = re.sub(r"\['(.*)'\]", r"\1", str(mktSharePct))
-    mktSharePct = round(float(mktSharePct), 5)
-    mktSharePct = str(mktSharePct)
-    mktSharePct = (mktSharePct[2:4] + '.' + mktSharePct[4:6] + '%')
-    # for display
-
-    if len(str(revenue)) == 15:
-        revenueD = str(str(round(float(revenue), -9))
-                       [:3])+'.'+str(str(round(float(revenue), -9))[3:5]+'T')
-    if len(str(revenue)) == 14:
-        revenueD = str(str(round(float(revenue), -9))
-                       [:2])+'.'+str(str(round(float(revenue), -9))[2:4]+'T')
-    if len(str(revenue)) == 13:
-        revenueD = str(str(round(float(revenue), -9))
-                       [:1])+'.'+str(str(round(float(avgCap), -9))[1:3]+'T')
-    elif len(str(revenue)) == 12:
-        revenueD = str(str(round(float(revenue), -7))
-                       [:3])+'.'+str(str(round(float(revenue), -7))[3:5]+'B')
-    elif len(str(revenue)) == 11:
-        revenueD = str(str(round(float(revenue), -7))
-                       [:2])+'.'+str(str(round(float(revenue), -7))[2:4]+'B')
-    elif len(str(revenue)) == 10:
-        revenueD = str(str(round(float(revenue), -7))
-                       [:1])+'.'+str(str(round(float(revenue), -7))[1:3]+'B')
-    elif len(str(revenue)) == 9:
-        revenueD = str(str(round(float(revenue), -4))
-                       [:3])+'.'+str(str(round(float(revenue), -4))[3:5]+'M')
-    elif len(str(revenue)) == 8:
-        revenueD = str(str(round(float(revenue), -4))
-                       [:2])+'.'+str(str(round(float(revenue), -4))[2:4]+'M')
-    elif len(str(revenue)) == 7:
-        revenueD = str(str(round(float(revenue), -4))
-                       [:1])+'.'+str(str(round(float(revenue), -4))[1:3]+'M')
-    elif len(str(revenue)) < 7:
-        revenueD = (format(int(revenue), ',d'))
-    # formats sales
-
-    if len(str(profit)) == 15:
-        profitD = str(str(round(float(profit), -9))
-                      [:3])+'.'+str(str(round(float(profit), -9))[3:5]+'T')
-    if len(str(profit)) == 14:
-        profitD = str(str(round(float(profit), -9))
-                      [:2])+'.'+str(str(round(float(profit), -9))[2:4]+'T')
-    if len(str(profit)) == 13:
-        profitD = str(str(round(float(profit), -9))
-                      [:1])+'.'+str(str(round(float(avgCap), -9))[1:3]+'T')
-    elif len(str(profit)) == 12:
-        profitD = str(str(round(float(profit), -7))
-                      [:3])+'.'+str(str(round(float(profit), -7))[3:5]+'B')
-    elif len(str(profit)) == 11:
-        profitD = str(str(round(float(profit), -7))
-                      [:2])+'.'+str(str(round(float(profit), -7))[2:4]+'B')
-    elif len(str(profit)) == 10:
-        profitD = str(str(round(float(profit), -7))
-                      [:1])+'.'+str(str(round(float(profit), -7))[1:3]+'B')
-    elif len(str(profit)) == 9:
-        profitD = str(str(round(float(profit), -4))
-                      [:3])+'.'+str(str(round(float(profit), -4))[3:5]+'M')
-    elif len(str(profit)) == 8:
-        profitD = str(str(round(float(profit), -4))
-                      [:2])+'.'+str(str(round(float(profit), -4))[2:4]+'M')
-    elif len(str(profit)) == 7:
-        profitD = str(str(round(float(profit), -4))
-                      [:1])+'.'+str(str(round(float(profit), -4))[1:3]+'M')
-    elif len(str(profit)) < 7:
-        profitD = (format(int(profit), ',d'))
-    
-    # formats net income
-
-    today = date.today()
-    date_1y = datetime.now() - relativedelta(years=1)
-    date_2y = datetime.now() - relativedelta(years=2)
-    date_3y = datetime.now() - relativedelta(years=3)
-    date_5y = datetime.now() - relativedelta(years=5)
-    date_10y = datetime.now() - relativedelta(years=10)
-    date_250y = datetime.now() - relativedelta(years=250)
-    date_ytd = datetime(today.year, 1,1)
-
     df1 = pdr.data.get_data_yahoo(ticker, start='1970-1-1', end=today)
     pryce = df1['Close']
     pryce = pryce.values.tolist()
-
     df1 = pdr.data.get_data_yahoo(ticker, start='1970-1-1', end=today)
     deight1 = df1['Close']
     deight = deight1.index.tolist()
     deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
-
     date_max = deight[0]
-
     df1 = pdr.data.get_data_yahoo(ticker, start=date_max, end=today)
     pryce = df1['Close']
     pryce = pryce.values.tolist()
-
     df1 = pdr.data.get_data_yahoo(ticker, start=date_max, end=today)
     deight1 = df1['Close']
     deight = deight1.index.tolist()
     deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
-
-    import plotly.graph_objects as go
-    from plotly.offline import plot
-    import pandas as pd
-    import requests
+    # Gets Prices and Corresponding Dates
 
     def line():
-        figure = go.Figure(
-            data = [
-                go.Line(
-                    x = deight,
-                    y = pryce
-                )
-            ]
-        )
-
+        figure = go.Figure(data=[go.Line(x=deight,y=pryce)])
         figure.update_xaxes(rangeslider_visible=True, 
                             rangeselector=dict(
         buttons=list([
@@ -314,22 +122,23 @@ def overview(request):
             dict(count=6, label="6m", step="month", stepmode="backward"),
             dict(count=1, label="YTD", step="year", stepmode="todate"),
             dict(count=1, label="1y", step="year", stepmode="backward"),
-            dict(step="all")
-        ]) ,
-
-        font_color="black"
-    ))
-
-        figure.update_layout(plot_bgcolor='#0f0f0f', paper_bgcolor ='#0f0f0f', font_color="white", title_font_color="white")
-
-        figure.update_traces(line_color="white")
-
-        figure.update_xaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#222121')
-
-        figure.update_yaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#222121')
-
+            dict(step="all")]) , font_color="black"))
+        figure.update_layout(plot_bgcolor='#dddddd', paper_bgcolor ='#dddddd', font_color="black", title_font_color="black")
+        figure.update_traces(line_color="black")
+        figure.update_xaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#a5a5a5')
+        figure.update_yaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#a5a5a5')
         line_div = plot(figure, output_type='div')
         return line_div
+    # Creates chart
 
+    avg_list = IndustryInfo.objects.values()
+    for x in avg_list:
+        if x['name'] == industry:
+            avg_pe = x['avg_pe']
+            avg_ps = x['avg_ps']
+            avg_pb = x['avg_pb']
+            avg_eps = x['avg_eps']
+            avg_fwdpe = x['avg_fwdpe']
+    # Gets variables from IndustryInfo object
 
-    return render(request, 'overview.html', {'companyName': companyName, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mktCapD': mktCapD, 'bookValue': bookValue, 'revenueD': revenueD, 'profitD': profitD, 'sector': sector, 'indSize': indSize, 'mktSharePct': mktSharePct, 'avgCap': avgCap, 'profitMarginD':  profitMarginD, 'revGrwthD': revGrwthD, 'deight': deight, 'pryce': pryce, 'line': line()})
+    return render(request, 'overview.html', {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_margin':profit_margin, 'sector': sector,'rev_growth': rev_growth, 'deight': deight, 'pryce': pryce, 'line': line(), 'pe': pe,'fwdpe':fwdpe, 'avg_pe': avg_pe,'avg_ps':avg_ps,'avg_pb':avg_pb,'avg_eps':avg_eps,'avg_fwdpe':avg_fwdpe,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float})
