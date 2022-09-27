@@ -37,6 +37,7 @@ from finvizfinance.screener.overview import Overview
 import math
 import statistics
 import time
+from django.db import connection
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -65,6 +66,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_crontab',
     'myapp'
+
 ]
 
 MIDDLEWARE = [
@@ -159,5 +161,6 @@ CACHES = {
 }
 
 CRONJOBS = [
-    ('0 0 * * *','myapp.cron.cronjob_every_midnight'),('025 19 * * *', 'myapp.cron.cronjob_every_1am')
+    ('0 10 * * *','myapp.cron.get_ind_av'),('0 0 * * *', 'myapp.cron.get_stock_info'),
+    ('0 12 * * *', 'myapp.cron.get_big_stock_info',)
 ]

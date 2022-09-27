@@ -18,11 +18,29 @@
 </head>
 
 <body>
-    <div class="container enterbox d-flex align-items-center justify-content-center">
-        <h2>Enter ticker symbol:</h2>
-        <form id="registerForm" method="GET" action="overview">
-            <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
-        </form>
+
+    <div class="container-fluid enterbox">
+
+        <div class="row mt-5">
+            <div class = "container d-flex justify-content-center align-items-center">
+            <img src="{% static 'frontlogo.svg' %}" width="200%" height="85%">
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class = "container d-flex justify-content-center align-items-center">
+                <form id="registerForm" method="GET" action="overview">
+                    <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-1">
+        <div class = "container d-flex justify-content-center align-items-center">
+            <h5>DISCLAIMER: Not financial advice.</h5>
+        </div>
     </div>
 
     <script src="{% static 'scripts4.js' %}"></script>

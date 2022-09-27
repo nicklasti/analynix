@@ -20,10 +20,11 @@
 
 <body>
 
+<div class="container-fluid align-items-center justify-content-center">
     <div class="topnav">
-        <a class="active" href="#home">Analynix</a>
-        <a href="#about">About</a>
-        <a href="#contact">Contact</a>
+        <img class="logo-img" src="{% static 'logo.svg' %}" width="100" height="30" ALT="align box" ALIGN=CENTER>
+        <a href="#about">about</a>
+        <a href="#contact">contact</a>
         <div class="search-container">
             <form id="registerForm" method="GET" action="overview">
                 <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
@@ -32,21 +33,25 @@
       </div>
 
     <section class="section">
-        <div class="row p-3 m-2">
+        <div class="row">
             <div class="col-md-6 ">
                 <div class="card-text-white bg-dark">
                     <div class="card-body p-2 p-2">
                         <div class="darktheme">
-                            <h4 class="bolded" style="color: teal;">{{company_name}}&nbsp&nbsp{{ticker}}</h4>
+                            <h4 class="bolded" style="color: rgb(8, 76, 43);">{{company_name}}&nbsp&nbsp{{ticker}}</h4>
                             <h6 style="color:black;"><span class="bolded">Sector:</span>&nbsp{{sector}}&nbsp</h6>
                             <h6 style="color:black"><span class="bolded">Industry:</span>&nbsp{{industry}}</h6>
+                            <a target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm" href={{edgar_link_8k}} role="button">8-K</a>
+                                            <a target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm" href={{edgar_link_10q}} role="button">10-Q</a>
+                                            <a target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm" href={{edgar_link_10k}} role="button">10-K</a>
                             {% autoescape off %}
                             {{line}}
                             {% endautoescape %}
-                            <h5 class="card-title" style="color: teal;">Company Size</h5>
+                            <h5 class="card-title" style="color: rgb(8, 76, 43);">Company Size</h5>
                             <table class="table">
                                 <thead>
                                     <tr>
+                                        <th scope="col">Book Value</th>
                                         <th scope="col">Mkt Cap</th>
                                         <th scope="col">Mkt Share</th>
                                         <th scope="col">Avg Cap</th>
@@ -55,29 +60,32 @@
                                 </thead>
                                 <tbody>
                                     <tr>
+                                        <td>${{book_value}}</td>
                                         <td>${{mkt_cap_short}}</td>
-                                        <td></td>
-                                        <td>$</td>
-                                        <td>$</td>
+                                        <td>{{mkt_share}}</td>
+                                        <td>${{avg_mkt_cap}}</td>
+                                        <td>${{ind_size}}</td>
                                     </tr>
                                 </tbody>
                             </table>
-                            <h5 class="card-title" style="color: teal;">Shares</h5>
+                            <h5 class="card-title" style="color: rgb(8, 76, 43);">Shares</h5>
                             <table class="table">
                                 <thead>
                                     <tr>
-                                        <th scope="col">Shares Float</th>
+                                        <th scope="col">Beta</th>
                                         <th scope="col">Avg Volume</th>
+                                        <th scope="col">Shares Float</th>
                                         <th scope="col">Short Float</th>
-                                        <th scope="col"></th>
+                                        <th scope="col">DTC</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{shares_float}}</td>
+                                        <td>{{beta}}</td>
                                         <td>{{avg_volume}}</td>
+                                        <td>{{shares_float}}</td>
                                         <td>{{short_float}}</td>
-                                        <td></td>
+                                        <td>{{dtc}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -86,95 +94,88 @@
                 </div>
             </div>
             <div class="col-md-6">
-                <div class="card-text-white bg-dark">
-                    <div class="card-body p-2 p-2">
-                        <div class="darktheme">
-                            <h5 class="card-title" style="color: teal;">Income Statement</h5>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        <th scope="col">{{ticker}}</th>
-                                        <th scope="col">Ind Avg</th>
-                                        <th scope="col">Grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>Revenue</td>
-                                        <td>${{revenue_short}}</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Revenue Growth (Q/Q)</td>
-                                        <td>{{rev_growth}}</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Earnings</td>
-                                        <td>${{profit}}</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Profit Margin</td>
-                                        <td>{{profit_margin}}</td>
-                                        <td></td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <h5 class="card-title" style="color: teal;">Market Valuation</h5>
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th scope="col"></th>
-                                        <th scope="col">{{ticker}}</th>
-                                        <th scope="col">Ind Avg</th>
-                                        <th scope="col">Grade</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>P/E</td>
-                                        <td>{{pe}}</td>
-                                        <td>{{avg_pe}}</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>Fwd P/E</td>
-                                        <td>{{fwdpe}}</td>
-                                        <td>{{avg_fwdpe}}</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>EPS</td>
-                                        <td>{{eps}}</td>
-                                        <td>{{avg_eps}}</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>P/S</td>
-                                        <td>{{ps}}</td>
-                                        <td>{{avg_ps}}</td>
-                                        <td></td>
-                                    </tr>
-                                    <tr>
-                                        <td>P/B</td>
-                                        <td>{{pb}}</td>
-                                        <td>{{avg_pb}}</td>
-                                        <td></td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>             
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Income Statement</th>
+                            <th scope="col">{{ticker}}</th>
+                            <th scope="col">Ind Avg</th>
+                            <th scope="col">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Revenue</td>
+                            <td>${{revenue_short}}</td>
+                            <td>${{avg_rev}}</td>
+                            <td>{{grade}}</td>
+                        </tr>
+                        <tr>
+                            <td>Revenue Growth (Q/Q)</td>
+                            <td>{{rev_growth}}</td>
+                            <td>{{avg_rev_growth}}</td>
+                            <td>{{rev_growth_grade}}</td>
+                        </tr>
+                        <tr>
+                            <td>Earnings</td>
+                            <td>${{profit_short}}</td>
+                            <td>${{avg_profit}}</td>
+                            <td>{{profit_grade}}</td>
+                        </tr>
+                        <tr>
+                            <td>Profit Margin</td>
+                            <td>{{profit_margin}}</td>
+                            <td>{{avg_profit_margin}}</td>
+                            <td>{{profit_margin_grade}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Market Valuation</th>
+                            <th scope="col">{{ticker}}</th>
+                            <th scope="col">Ind Avg</th>
+                            <th scope="col">Grade</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>P/E</td>
+                            <td>{{pe}}</td>
+                            <td>{{avg_pe}}</td>
+                            <td>{{pe_grade}}</td>
+                        </tr>
+                        <tr>
+                            <td>Fwd P/E</td>
+                            <td>{{fwdpe}}</td>
+                            <td>{{avg_fwdpe}}</td>
+                            <td>{{fwdpe_grade}}</td>
+                        </tr>
+                        <tr>
+                            <td>EPS</td>
+                            <td>{{eps}}</td>
+                            <td>{{avg_eps}}</td>
+                            <td>{{eps_grade}}</td>
+                        </tr>
+                        <tr>
+                            <td>P/S</td>
+                            <td>{{ps}}</td>
+                            <td>{{avg_ps}}</td>
+                            <td>{{ps_grade}}</td>
+                        </tr>
+                        <tr>
+                            <td>P/B</td>
+                            <td>{{pb}}</td>
+                            <td>{{avg_pb}}</td>
+                            <td>{{pb_grade}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
     </section>
+</div>
 
     <script src="{% static 'jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap.min.js' %}"></script>

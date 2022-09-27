@@ -6,3 +6,6 @@ admin.site.register(IndustryInfo)
 
 from myapp.models import StockInfo
 admin.site.register(StockInfo)
+
+from myapp.models import StockTest
+admin.site.register(StockTest)

@@ -1,9 +1,10 @@
 
 # Periodic Caching System:
-
+from pyexpat import model
+from hashlib import new
 from django.db import models
 from unicodedata import name
-from myapp.models import IndustryInfo
+from myapp.models import IndustryInfo, StockTest
 from myapp.models import StockInfo
 from finvizfinance.screener.overview import Overview
 from finvizfinance.screener.valuation import Valuation
@@ -16,7 +17,6 @@ import regex as re
 #from django.apps import AppConfig
 from django.conf import settings
 from logging.config import IDENTIFIER
-from myapp.models import IndustryInfo
 from audioop import avg
 from pickle import TRUE
 from cmath import nan
@@ -30,91 +30,141 @@ DOLLAR_MAPPING = {
     'e': float(0)
 }
 # Helps create floats from shortened long numbers
+
+def human_format(num):
+        num = float('{:.3g}'.format(num))
+        magnitude = 0
+        while abs(num) >= 1000:
+            magnitude += 1
+            num /= 1000.0
+        return '{}{}'.format('{:f}'.format(num).rstrip('0').rstrip('.'), ['', 'K', 'M', 'B', 'T'][magnitude])
+
 def fix_dashes(x):
         if x == '-':
-            x = ''
+            x = 0
             return x
         else:
             x = round(float(x),2)
             return x
-    # Gets rid of the dash for - values
-def get_stock_info(industry):
+# Gets rid of the dash for - values and turns it into a 0
+stock_dic = {}
+# Creates an empty dictionary (no shit)
+def get_stock_dic(ind):
+    industry = ind
     foverview = Valuation()
     filters_dict = {'Industry': industry}
     foverview.set_filter(filters_dict=filters_dict)
-    stock == None
-    ticker == None
-    sector == None
-    company_name == None
-    beta  == None
-    pb == None
-    ps == None
-    pe == None
-    fwdpe == None
-    eps == None
-    mkt_cap_short == None
-    mkt_cap == None
-    revenue_short == None
-    revenue == None
-    profit_short == None
-    profit == None
-    profit_margin == None
-    profit_margin_float == None
-    rev_growth == None
-    rev_growth_float == None
-    avg_volume == None
-    shares_float == None
-    short_float == None
     df = foverview.screener_view()
-    time.sleep(5)
+    time.sleep(2)
     ticker_list = df['Ticker']
     for stock_ticker in ticker_list:
-        while stock == None or sector == None or company_name == None or beta == None or pb == None or ps == None or pe == None or fwdpe == None or eps == None or mkt_cap_short == None or mkt_cap == None or revenue_short == None or revenue == None or profit_short == None or profit == None or profit_margin == None or profit_margin_float == None or rev_growth == None or rev_growth_float == None or avg_volume == None or shares_float == None or short_float == None:
+        stock = None
+        while stock == None:
             try:
                 stock = finvizfinance(stock_ticker).ticker_fundament()
-                time.sleep(5)
-                # Stores the basic stock data as a variable
-                sector = stock['Sector']
-                # Gets the sector
-                ticker = stock['Ticker']
-                # Gets the ticker
-                company_name = stock['Company']
-                # Gets the company name
-                beta = stock['Beta']
-                beta = fix_dashes(beta)
-                pb = stock['P/B']
-                pb = fix_dashes(pb)
-                ps = stock['P/S']
-                ps = fix_dashes(ps)
-                pe = stock['P/E']
-                pe = fix_dashes(pe)
-                fwdpe = stock['Forward P/E']
-                fwdpe = fix_dashes(fwdpe)
-                eps = stock['EPS (ttm)']
-                eps = fix_dashes(eps)
-                mkt_cap_short = stock['Market Cap']
-                mkt_cap = float(mkt_cap_short[:-1]) * float(DOLLAR_MAPPING[mkt_cap_short[-1]])
-                #gets mkt cap
-                revenue_short = stock['Sales']
-                revenue = float(revenue_short[:-1]) * float(DOLLAR_MAPPING[revenue_short[-1]])
-                # gets the sales
-                profit_short = stock['Income']
-                profit = float(profit_short[:-1]) * float(DOLLAR_MAPPING[profit_short[-1]])
-                # gets the net income
-                profit_margin = stock['Profit Margin']
-                # gets the PM
-                profit_margin_float = float(profit_margin[:-1])/100
-                rev_growth = stock['Sales Q/Q']
-                rev_growth_float = float(rev_growth[:-1])/100
-                avg_volume = stock['Avg Volume']
-                shares_float = stock['Shs Float']
-                short_float = stock['Short Float']
-                # gets revenue growth
-                StockInfo.objects.update_or_create(ticker=stock_ticker,industry=industry, sector=sector, company_name=company_name,beta=beta,pb=pb,ps=ps,pe=pe,fwdpe=fwdpe,eps=eps,mkt_cap_short=mkt_cap_short,mkt_cap=mkt_cap,revenue_short=revenue_short,revenue=revenue, profit_short=profit_short,profit=profit,profit_margin=profit_margin, profit_margin_float=profit_margin_float, rev_growth=rev_growth, rev_growth_float=rev_growth_float,avg_volume=avg_volume,shares_float=shares_float,short_float=short_float)
+                time.sleep(2)
             except Exception:
-                time.sleep(15)
+                time.sleep(10)
+    # Stores the basic stock data as a variable
+        sector = stock['Sector']
+        # Gets the sector
+        ticker = stock_ticker
+        # Gets the ticker
+        company_name = stock['Company']
+        # Gets the company name
+        beta = stock['Beta']
+        beta = fix_dashes(beta)
+        book_sh = (stock['Book/sh'])
+        if book_sh == '-':
+            book_sh = str(0)
+            bvps = 0
+        else:
+            bvps = float(book_sh)
 
-def get_industry_info(industry):
+
+        shares_outstanding = stock['Shs Outstand']
+        if shares_outstanding == '-':
+            shares_outstanding=0
+        else:
+            shares_outstanding = float(stock['Shs Outstand'][:-1]) * float(DOLLAR_MAPPING[stock['Shs Outstand'][-1]])
+        
+        book_value = bvps * shares_outstanding
+
+        pb = stock['P/B']
+        pb = fix_dashes(pb)
+        ps = stock['P/S']
+        ps = fix_dashes(ps)
+        pe = stock['P/E']
+        pe = fix_dashes(pe)
+        fwdpe = stock['Forward P/E']
+        fwdpe = fix_dashes(fwdpe)
+        eps = stock['EPS (ttm)']
+        eps = fix_dashes(eps)
+        mkt_cap_short = stock['Market Cap']
+        if mkt_cap_short == '-':
+            mkt_cap_short = str(0)
+            mkt_cap = 0
+        else:
+            mkt_cap = float(mkt_cap_short[:-1]) * float(DOLLAR_MAPPING[mkt_cap_short[-1]])
+        #gets mkt cap
+        revenue_short = stock['Sales']
+        if revenue_short == '-':
+            revenue_short = str(0)
+            revenue = 0
+        else:
+            revenue = float(revenue_short[:-1]) * float(DOLLAR_MAPPING[revenue_short[-1]])
+        # gets the sales
+        profit_short = stock['Income']
+        if profit_short == '-':
+            profit = 0
+            profit_short = '0'
+        else:
+            profit = float(profit_short[:-1]) * float(DOLLAR_MAPPING[profit_short[-1]])
+        # gets the net income
+        profit_margin = stock['Profit Margin']
+        if profit_margin == '-':
+            profit_margin = str(0)
+            profit_margin_float = 0
+        else:
+            profit_margin_float = float(profit_margin[:-1])/100
+        # gets the PM
+        rev_growth = stock['Sales Q/Q']
+        if rev_growth == '-':
+            rev_growth = str(0)
+            rev_growth_float = 0
+        else:
+            rev_growth_float = float(rev_growth[:-1])/100
+        # gets rev growth
+        avg_volume = stock['Avg Volume']
+
+        if avg_volume == '-':
+            avg_volume = str(0)
+            avg_volume_float=0
+        else:
+            avg_volume_float=float(avg_volume[:-1]) * float(DOLLAR_MAPPING[avg_volume[-1]])
+
+        shares_float = stock['Shs Float']
+
+        if shares_float == '-':
+            shares_float = str(0)
+            shares_float_float=0
+        else:
+            shares_float_float=float(shares_float[:-1]) * float(DOLLAR_MAPPING[shares_float[-1]])
+        
+        short_float = stock['Short Float']
+
+        if short_float == '-':
+            short_float = str(0)
+            short_float_float = 0
+        else:
+            short_float_float = float(short_float[:-1])/100
+
+        # gets revenue growth
+        stock_dic[ticker] = {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short':profit_short, 'profit_margin':profit_margin, 'sector': sector,'rev_growth': rev_growth, 'pe': pe,'fwdpe':fwdpe, 'profit_margin_float': profit_margin_float,'rev_growth_float':rev_growth_float,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'book_value':book_value,'bvps':bvps,'avg_volume_float':avg_volume_float,'shares_float_float':shares_float_float,'short_float_float':short_float_float}
+    return stock_dic
+# Creates a stock dictionary for the industry
+def get_industry_info(ind):
+    industry = ind
     foverview = Valuation()
     filters_dict = {'Industry': industry}
     foverview.set_filter(filters_dict=filters_dict)
@@ -186,6 +236,8 @@ def get_industry_info(industry):
             IndustryInfo.objects.filter(name=industry).update(avg_pe=avg_pe,avg_ps=avg_ps,avg_pb=avg_pb,avg_eps=avg_eps,avg_fwdpe=avg_fwdpe,avg_mkt_cap=avg_mkt_cap,ind_size=ind_size)
         except Exception:
             time.sleep(30)
+# Gets Industry data
+
 
 def get_industry_list():
     req = Request("https://finviz.com/groups.ashx?g=industry&v=110&#o=name",headers={'User-Agent': 'Mozilla/5.0'})
@@ -198,6 +250,7 @@ def get_industry_list():
         if industry not in big_industries:
             small_industries.append(industry)
     return small_industries
+# Gets a list of all the industries
 
 # Can run the following in the Terminal:
 
@@ -205,15 +258,242 @@ def get_industry_list():
 #  python manage.py crontab show
 #  python manage.py crontab add
 #  python manage.py runserver
+#  python manage.py crontab run (hash)
 
-def cronjob_every_midnight():
+def get_ind_av():
     industries = get_industry_list()
     for industry in industries:
         get_industry_info(industry)
-    # Gets Industry averages, should take roughly 20-30 minutes
+# Gets Industry averages, should take roughly 20-30 minutes
 
-def cronjob_every_1am():
+def get_stock_info():
     industries = get_industry_list()
+    industries = industries[:2]
     for industry in industries:
-        get_stock_info(industry)
-    # Gets Stock prices, should take long, maybe 4-6 hours
+        get_stock_dic(industry)
+        for stock in stock_dic:
+            StockTest.objects.update_or_create(
+                name = stock_dic[stock]['ticker'],
+                industry = stock_dic[stock]['industry'],
+                sector = stock_dic[stock]['sector'],
+                company_name = stock_dic[stock]['company_name'],
+                beta = stock_dic[stock]['beta'],
+                pb=stock_dic[stock]['pb'],
+                ps=stock_dic[stock]['ps'],
+                pe=stock_dic[stock]['pe'],
+                fwdpe=stock_dic[stock]['fwdpe'],
+                eps=stock_dic[stock]['eps'],
+                mkt_cap_short=stock_dic[stock]['mkt_cap_short'],
+                mkt_cap=stock_dic[stock]['mkt_cap'],
+                revenue_short=stock_dic[stock]['revenue_short'],
+                revenue=stock_dic[stock]['revenue'],
+                profit_short=stock_dic[stock]['profit_short'],
+                profit=stock_dic[stock]['profit'],
+                profit_margin=stock_dic[stock]['profit_margin'],
+                profit_margin_float=stock_dic[stock]['profit_margin_float'],
+                rev_growth=stock_dic[stock]['rev_growth'],
+                rev_growth_float=stock_dic[stock]['rev_growth_float'],
+                avg_volume=stock_dic[stock]['avg_volume'],
+                shares_float=stock_dic[stock]['shares_float'],
+                short_float=stock_dic[stock]['short_float'],
+                book_value=stock_dic[stock]['book_value'],
+                bvps=stock_dic[stock]['bvps'],
+                avg_volume_float=stock_dic[stock]['avg_volume_float'],
+                shares_float_float=stock_dic[stock]['shares_float_float'],
+                short_float_float=stock_dic[stock]['short_float_float']
+
+                )
+# Gets all data on all stocks and stores it
+
+def get_bigindustry_list():
+    req = Request("https://finviz.com/groups.ashx?g=industry&v=110&#o=name",headers={'User-Agent': 'Mozilla/5.0'})
+    webpage = urlopen(req).read().decode('utf-8')
+    industries = re.findall('(?<=class="tab-link">).*?(?=</a>)',webpage,re.DOTALL)
+    industries = industries[:144]
+    big_industries = [industries[13],industries[17],industries[118],industries[8],industries[9],industries[37],industries[40],industries[43],industries[44],industries[62],industries[120],industries[121]]
+    small_industries = []
+    for industry in industries:
+        if industry not in big_industries:
+            small_industries.append(industry)
+    return big_industries
+
+big_stock_dic={}
+
+def get_big_stock_dic():
+    bigindlist = get_industry_list()
+    newbigindlist=[]
+    for i in bigindlist:
+        i = i.lower()
+        i = i.replace(" ", "")
+        i = i.replace("&","")
+        i = i.replace("-", "")
+        newbigindlist.append(i)
+
+    rlist = [
+                '','21','41','61','81','101','121','141','161','181','201','221','241','261','281','301','321','341','361','381','401','421','441','461','481','501','521','541','561','581','601','621','641','661','681','701','721','741','761','781'
+            ]
+            
+    big_ticka_list = []
+
+    def add_tickers_to_list(tickalist):
+        try:
+            for ticker in tickalist:
+                if ticker not in big_ticka_list:
+                    big_ticka_list.append(ticker)
+                else: continue
+        except:
+            pass
+
+    def get_tickers_from_page(i,page):
+        reqdef1 = Request('https://finviz.com/screener.ashx?f=ind_'+i+'&r='+page, headers={'User-Agent': 'Mozilla/5.0'})
+        urlsite = urlopen(reqdef1).read().decode('utf-8')
+        tickalist = re.findall('(?<=class="screener-link-primary">).*?(?=</a>)',urlsite, re.DOTALL)
+        return add_tickers_to_list(tickalist)
+    for i in newbigindlist:
+        for page in rlist:
+            try:
+                get_tickers_from_page(i,page)
+                time.sleep(.3)
+            except Exception:
+                time.sleep(3)
+    for stock_ticker in big_ticka_list:
+        stock = None
+        while stock == None:
+            try:
+                stock = finvizfinance(stock_ticker).ticker_fundament()
+                time.sleep(2)
+            except Exception:
+                time.sleep(10)
+        # Stores the basic stock data as a variable
+        sector = stock['Sector']
+        # Gets the sector
+        ticker = stock_ticker
+        # Gets the ticker
+        company_name = stock['Company']
+        # Gets the company name
+        beta = stock['Beta']
+        beta = fix_dashes(beta)
+        book_sh = (stock['Book/sh'])
+        if book_sh == '-':
+            book_sh = str(0)
+            bvps = 0
+        else:
+            bvps = float(book_sh)
+
+
+        shares_outstanding = stock['Shs Outstand']
+        if shares_outstanding == '-':
+            shares_outstanding=0
+        else:
+            shares_outstanding = float(stock['Shs Outstand'][:-1]) * float(DOLLAR_MAPPING[stock['Shs Outstand'][-1]])
+        
+        book_value = bvps * shares_outstanding
+
+        industry = stock['Industry']
+        
+        pb = stock['P/B']
+        pb = fix_dashes(pb)
+        ps = stock['P/S']
+        ps = fix_dashes(ps)
+        pe = stock['P/E']
+        pe = fix_dashes(pe)
+        fwdpe = stock['Forward P/E']
+        fwdpe = fix_dashes(fwdpe)
+        eps = stock['EPS (ttm)']
+        eps = fix_dashes(eps)
+        mkt_cap_short = stock['Market Cap']
+        if mkt_cap_short == '-':
+            mkt_cap_short = str(0)
+            mkt_cap = 0
+        else:
+            mkt_cap = float(mkt_cap_short[:-1]) * float(DOLLAR_MAPPING[mkt_cap_short[-1]])
+        #gets mkt cap
+        revenue_short = stock['Sales']
+        if revenue_short == '-':
+            revenue_short = str(0)
+            revenue = 0
+        else:
+            revenue = float(revenue_short[:-1]) * float(DOLLAR_MAPPING[revenue_short[-1]])
+        # gets the sales
+        profit_short = stock['Income']
+        if profit_short == '-':
+            profit = 0
+            profit_short = '0'
+        else:
+            profit = float(profit_short[:-1]) * float(DOLLAR_MAPPING[profit_short[-1]])
+        # gets the net income
+        profit_margin = stock['Profit Margin']
+        if profit_margin == '-':
+            profit_margin = str(0)
+            profit_margin_float = 0
+        else:
+            profit_margin_float = float(profit_margin[:-1])/100
+        # gets the PM
+        rev_growth = stock['Sales Q/Q']
+        if rev_growth == '-':
+            rev_growth = str(0)
+            rev_growth_float = 0
+        else:
+            rev_growth_float = float(rev_growth[:-1])/100
+        # gets rev growth
+        avg_volume = stock['Avg Volume']
+
+        if avg_volume == '-':
+            avg_volume = str(0)
+            avg_volume_float=0
+        else:
+            avg_volume_float=float(avg_volume[:-1]) * float(DOLLAR_MAPPING[avg_volume[-1]])
+
+        shares_float = stock['Shs Float']
+
+        if shares_float == '-':
+            shares_float = str(0)
+            shares_float_float=0
+        else:
+            shares_float_float=float(shares_float[:-1]) * float(DOLLAR_MAPPING[shares_float[-1]])
+        
+        short_float = stock['Short Float']
+
+        if short_float == '-':
+            short_float = str(0)
+            short_float_float = 0
+        else:
+            short_float_float = float(short_float[:-1])/100
+
+        # gets revenue growth
+        big_stock_dic[ticker] = {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short':profit_short, 'profit_margin':profit_margin, 'sector': sector,'rev_growth': rev_growth, 'pe': pe,'fwdpe':fwdpe, 'profit_margin_float': profit_margin_float,'rev_growth_float':rev_growth_float,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'book_value':book_value,'bvps':bvps,'avg_volume_float':avg_volume_float,'shares_float_float':shares_float_float,'short_float_float':short_float_float}
+    return big_stock_dic
+
+def get_big_stock_info():
+    get_big_stock_dic()
+    for stock in big_stock_dic:
+        StockTest.objects.update_or_create(
+            name = stock_dic[stock]['ticker'],
+            industry = stock_dic[stock]['industry'],
+            sector = stock_dic[stock]['sector'],
+            company_name = stock_dic[stock]['company_name'],
+            beta = stock_dic[stock]['beta'],
+            pb=stock_dic[stock]['pb'],
+            ps=stock_dic[stock]['ps'],
+            pe=stock_dic[stock]['pe'],
+            fwdpe=stock_dic[stock]['fwdpe'],
+            eps=stock_dic[stock]['eps'],
+            mkt_cap_short=stock_dic[stock]['mkt_cap_short'],
+            mkt_cap=stock_dic[stock]['mkt_cap'],
+            revenue_short=stock_dic[stock]['revenue_short'],
+            revenue=stock_dic[stock]['revenue'],
+            profit_short=stock_dic[stock]['profit_short'],
+            profit=stock_dic[stock]['profit'],
+            profit_margin=stock_dic[stock]['profit_margin'],
+            profit_margin_float=stock_dic[stock]['profit_margin_float'],
+            rev_growth=stock_dic[stock]['rev_growth'],
+            rev_growth_float=stock_dic[stock]['rev_growth_float'],
+            avg_volume=stock_dic[stock]['avg_volume'],
+            shares_float=stock_dic[stock]['shares_float'],
+            short_float=stock_dic[stock]['short_float'],
+            book_value=stock_dic[stock]['book_value'],
+            bvps=stock_dic[stock]['bvps'],
+            avg_volume_float=stock_dic[stock]['avg_volume_float'],
+            shares_float_float=stock_dic[stock]['shares_float_float'],
+            short_float_float=stock_dic[stock]['short_float_float']
+            )

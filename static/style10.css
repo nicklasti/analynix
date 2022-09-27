@@ -22,10 +22,8 @@ body {
 }
 
 .enterbox {
-    max-width: 1000px;
+    max-width: 50%;
     height: 600px;
-    background-color: #0f0f0f;
-    color:white
 }
 
 * {box-sizing: border-box;}
@@ -45,6 +43,22 @@ body {
   text-decoration: none;
   font-size: 17px;
 }
+
+.topnav b {
+  float: center;
+  display: block;
+  color: black;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 17px;
+}
+
+.topnav b.activo {
+  background-color: #387a71;
+  color: white;
+}
+
 
 .topnav a:hover {
   background-color: #ddd;
@@ -97,4 +111,10 @@ body {
   .topnav input[type=text] {
     border: 1px solid #ccc;  
   }
+}
+
+.logo-img{
+  float: left;
+  position: relative;
+  margin: 13px 3px 3px 3px;
 }
