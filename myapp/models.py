@@ -7,7 +7,7 @@ from django.db import models
 from logging.config import IDENTIFIER
 
 class IndustryInfo(models.Model):
-    name = models.TextField(default='default')
+    name = models.TextField(default='default', primary_key=TRUE)
     avg_pe = models.FloatField(default=69.69)
     avg_ps = models.FloatField(default=69.69)
     avg_eps = models.FloatField(default=69.69)
@@ -17,7 +17,7 @@ class IndustryInfo(models.Model):
     avg_mkt_cap = models.FloatField(default=69.69)
 
 class StockInfo(models.Model):
-    name = models.TextField(default='default')
+    name = models.TextField(default='default',primary_key=TRUE)
     industry = models.TextField(default='default')
     sector = models.TextField(default='default')
     company_name = models.TextField(default='default')
@@ -42,7 +42,7 @@ class StockInfo(models.Model):
     short_float = models.TextField(default='default')
 
 class StockTest(models.Model):
-    name = models.TextField(default='Ticker')
+    name = models.TextField(default='Ticker',primary_key=TRUE)
     industry = models.TextField(default='Industry')
     sector = models.TextField(default='Sector')
     company_name = models.TextField(default='Company Name')

@@ -233,7 +233,15 @@ def get_industry_info(ind):
             avg_fwdpe = round(statistics.mean(fwdpe_list2),2)
             avg_mkt_cap = round(statistics.mean(mkt_cap_list2),2)
             ind_size = sum(mkt_cap_list2)
-            IndustryInfo.objects.filter(name=industry).update(avg_pe=avg_pe,avg_ps=avg_ps,avg_pb=avg_pb,avg_eps=avg_eps,avg_fwdpe=avg_fwdpe,avg_mkt_cap=avg_mkt_cap,ind_size=ind_size)
+            IndustryInfo.objects.update_or_create(
+                name = industry,
+                avg_pe=avg_pe,
+                avg_ps=avg_ps,
+                avg_pb=avg_pb,
+                avg_eps=avg_eps,
+                avg_fwdpe=avg_fwdpe,
+                avg_mkt_cap=avg_mkt_cap,
+                ind_size=ind_size)
         except Exception:
             time.sleep(30)
 # Gets Industry data
@@ -268,7 +276,6 @@ def get_ind_av():
 
 def get_stock_info():
     industries = get_industry_list()
-    industries = industries[:2]
     for industry in industries:
         get_stock_dic(industry)
         for stock in stock_dic:
@@ -311,16 +318,14 @@ def get_bigindustry_list():
     industries = re.findall('(?<=class="tab-link">).*?(?=</a>)',webpage,re.DOTALL)
     industries = industries[:144]
     big_industries = [industries[13],industries[17],industries[118],industries[8],industries[9],industries[37],industries[40],industries[43],industries[44],industries[62],industries[120],industries[121]]
-    small_industries = []
-    for industry in industries:
-        if industry not in big_industries:
-            small_industries.append(industry)
     return big_industries
 
 big_stock_dic={}
 
+big_ticka_list = []
+
 def get_big_stock_dic():
-    bigindlist = get_industry_list()
+    bigindlist = get_bigindustry_list()
     newbigindlist=[]
     for i in bigindlist:
         i = i.lower()
@@ -332,8 +337,6 @@ def get_big_stock_dic():
     rlist = [
                 '','21','41','61','81','101','121','141','161','181','201','221','241','261','281','301','321','341','361','381','401','421','441','461','481','501','521','541','561','581','601','621','641','661','681','701','721','741','761','781'
             ]
-            
-    big_ticka_list = []
 
     def add_tickers_to_list(tickalist):
         try:
@@ -348,7 +351,9 @@ def get_big_stock_dic():
         reqdef1 = Request('https://finviz.com/screener.ashx?f=ind_'+i+'&r='+page, headers={'User-Agent': 'Mozilla/5.0'})
         urlsite = urlopen(reqdef1).read().decode('utf-8')
         tickalist = re.findall('(?<=class="screener-link-primary">).*?(?=</a>)',urlsite, re.DOTALL)
-        return add_tickers_to_list(tickalist)
+        add_tickers_to_list(tickalist)
+    
+
     for i in newbigindlist:
         for page in rlist:
             try:
@@ -365,6 +370,7 @@ def get_big_stock_dic():
             except Exception:
                 time.sleep(10)
         # Stores the basic stock data as a variable
+        industry = stock['Industry']
         sector = stock['Sector']
         # Gets the sector
         ticker = stock_ticker
@@ -389,8 +395,6 @@ def get_big_stock_dic():
         
         book_value = bvps * shares_outstanding
 
-        industry = stock['Industry']
-        
         pb = stock['P/B']
         pb = fix_dashes(pb)
         ps = stock['P/S']
@@ -468,32 +472,32 @@ def get_big_stock_info():
     get_big_stock_dic()
     for stock in big_stock_dic:
         StockTest.objects.update_or_create(
-            name = stock_dic[stock]['ticker'],
-            industry = stock_dic[stock]['industry'],
-            sector = stock_dic[stock]['sector'],
-            company_name = stock_dic[stock]['company_name'],
-            beta = stock_dic[stock]['beta'],
-            pb=stock_dic[stock]['pb'],
-            ps=stock_dic[stock]['ps'],
-            pe=stock_dic[stock]['pe'],
-            fwdpe=stock_dic[stock]['fwdpe'],
-            eps=stock_dic[stock]['eps'],
-            mkt_cap_short=stock_dic[stock]['mkt_cap_short'],
-            mkt_cap=stock_dic[stock]['mkt_cap'],
-            revenue_short=stock_dic[stock]['revenue_short'],
-            revenue=stock_dic[stock]['revenue'],
-            profit_short=stock_dic[stock]['profit_short'],
-            profit=stock_dic[stock]['profit'],
-            profit_margin=stock_dic[stock]['profit_margin'],
-            profit_margin_float=stock_dic[stock]['profit_margin_float'],
-            rev_growth=stock_dic[stock]['rev_growth'],
-            rev_growth_float=stock_dic[stock]['rev_growth_float'],
-            avg_volume=stock_dic[stock]['avg_volume'],
-            shares_float=stock_dic[stock]['shares_float'],
-            short_float=stock_dic[stock]['short_float'],
-            book_value=stock_dic[stock]['book_value'],
-            bvps=stock_dic[stock]['bvps'],
-            avg_volume_float=stock_dic[stock]['avg_volume_float'],
-            shares_float_float=stock_dic[stock]['shares_float_float'],
-            short_float_float=stock_dic[stock]['short_float_float']
+            name = big_stock_dic[stock]['ticker'],
+            industry = big_stock_dic[stock]['industry'],
+            sector = big_stock_dic[stock]['sector'],
+            company_name = big_stock_dic[stock]['company_name'],
+            beta = big_stock_dic[stock]['beta'],
+            pb=big_stock_dic[stock]['pb'],
+            ps=big_stock_dic[stock]['ps'],
+            pe=big_stock_dic[stock]['pe'],
+            fwdpe=big_stock_dic[stock]['fwdpe'],
+            eps=big_stock_dic[stock]['eps'],
+            mkt_cap_short=big_stock_dic[stock]['mkt_cap_short'],
+            mkt_cap=big_stock_dic[stock]['mkt_cap'],
+            revenue_short=big_stock_dic[stock]['revenue_short'],
+            revenue=big_stock_dic[stock]['revenue'],
+            profit_short=big_stock_dic[stock]['profit_short'],
+            profit=big_stock_dic[stock]['profit'],
+            profit_margin=big_stock_dic[stock]['profit_margin'],
+            profit_margin_float=big_stock_dic[stock]['profit_margin_float'],
+            rev_growth=big_stock_dic[stock]['rev_growth'],
+            rev_growth_float=big_stock_dic[stock]['rev_growth_float'],
+            avg_volume=big_stock_dic[stock]['avg_volume'],
+            shares_float=big_stock_dic[stock]['shares_float'],
+            short_float=big_stock_dic[stock]['short_float'],
+            book_value=big_stock_dic[stock]['book_value'],
+            bvps=big_stock_dic[stock]['bvps'],
+            avg_volume_float=big_stock_dic[stock]['avg_volume_float'],
+            shares_float_float=big_stock_dic[stock]['shares_float_float'],
+            short_float_float=big_stock_dic[stock]['short_float_float']
             )
