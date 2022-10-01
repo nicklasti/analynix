@@ -1,0 +1,2 @@
+docker build --tag nixreens .
+docker run 

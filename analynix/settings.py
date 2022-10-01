@@ -12,32 +12,6 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
-import yfinance as yf
-import datetime
-from datetime import datetime
-from datetime import date
-from datetime import time
-import pandas as pd
-import matplotlib.pyplot as plt
-import urllib.request
-import urllib.error
-import urllib.parse
-from urllib.request import Request, urlopen
-import re
-import yahoo_fin
-from yahoo_fin import options
-from yahoo_fin import stock_info
-import pandas_datareader as pdr
-import pandas_datareader.data as web
-from dateutil.relativedelta import relativedelta
-import plotly.graph_objects as go
-from plotly.offline import plot
-from finvizfinance.quote import finvizfinance
-from finvizfinance.screener.overview import Overview
-import math
-import statistics
-import time
-from django.db import connection
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -161,6 +135,6 @@ CACHES = {
 }
 
 CRONJOBS = [
-    ('0 10 * * *','myapp.cron.get_ind_av'),('0 0 * * *', 'myapp.cron.get_stock_info'),
+    ('0 0 * * *', 'myapp.cron.get_stock_info'),
     ('0 12 * * *', 'myapp.cron.get_big_stock_info',)
 ]

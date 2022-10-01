@@ -1,26 +1,38 @@
 
 # Periodic Caching System:
-from pyexpat import model
-from hashlib import new
-from django.db import models
-from unicodedata import name
-from myapp.models import IndustryInfo, StockTest
+
 from myapp.models import StockInfo
-from finvizfinance.screener.overview import Overview
 from finvizfinance.screener.valuation import Valuation
 from finvizfinance.quote import finvizfinance
-import math
-import statistics
+import pandas_datareader as pdr
 import time
+import datetime
+from datetime import datetime
+from datetime import date
+from dateutil.relativedelta import relativedelta
 from urllib.request import Request, urlopen
 import regex as re
 #from django.apps import AppConfig
+from finvizfinance.screener.overview import Overview
 from django.conf import settings
 from logging.config import IDENTIFIER
 from audioop import avg
 from pickle import TRUE
 from cmath import nan
 import pandas as pd
+from pyexpat import model
+from hashlib import new
+from django.db import models
+from unicodedata import name
+
+today = date.today()
+date_1y = datetime.now() - relativedelta(years=1)
+date_2y = datetime.now() - relativedelta(years=2)
+date_3y = datetime.now() - relativedelta(years=3)
+date_5y = datetime.now() - relativedelta(years=5)
+date_10y = datetime.now() - relativedelta(years=10)
+date_250y = datetime.now() - relativedelta(years=250)
+date_ytd = datetime(today.year, 1,1)
 
 DOLLAR_MAPPING = {
     'T': float(1000000000000),
@@ -163,89 +175,6 @@ def get_stock_dic(ind):
         stock_dic[ticker] = {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short':profit_short, 'profit_margin':profit_margin, 'sector': sector,'rev_growth': rev_growth, 'pe': pe,'fwdpe':fwdpe, 'profit_margin_float': profit_margin_float,'rev_growth_float':rev_growth_float,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'book_value':book_value,'bvps':bvps,'avg_volume_float':avg_volume_float,'shares_float_float':shares_float_float,'short_float_float':short_float_float}
     return stock_dic
 # Creates a stock dictionary for the industry
-def get_industry_info(ind):
-    industry = ind
-    foverview = Valuation()
-    filters_dict = {'Industry': industry}
-    foverview.set_filter(filters_dict=filters_dict)
-    avg_pe = None
-    avg_eps = None
-    avg_fwdpe = None
-    avg_pb = None
-    avg_ps = None
-    avg_mkt_cap = None
-    while avg_pe == None or avg_eps == None or avg_fwdpe == None or avg_pb == None or avg_ps == None or avg_mkt_cap == None:
-        try:
-            df = foverview.screener_view()
-            time.sleep(5)
-            mkt_cap_list1 = df ['Market Cap']
-            mkt_cap_list2 = []
-            ps_list1 = df['P/S']
-            ps_list2 = []
-            pb_list1 = df['P/B']
-            pb_list2 = []
-            pe_list1 = df['P/E']
-            pe_list2 = []
-            eps_list1 = df['EPS this Y']
-            eps_list2 = []
-            fwdpe_list1 = df['Fwd P/E']
-            fwdpe_list2 = []
-            for mkt_cap in mkt_cap_list1:
-                if math.isnan(mkt_cap):
-                    continue
-                else:
-                    mkt_cap_list2.append(mkt_cap)
-                    continue
-            for fwdpe in fwdpe_list1:
-                if math.isnan(fwdpe):
-                    continue
-                else:
-                    fwdpe_list2.append(fwdpe)
-                    continue
-            for eps in eps_list1:
-                if math.isnan(eps):
-                    continue
-                else:
-                    eps_list2.append(eps)
-                    continue
-            for ps in ps_list1:
-                if math.isnan(ps):
-                    continue
-                else:
-                    ps_list2.append(ps)
-                    continue
-            for pe in pe_list1:
-                if math.isnan(pe):
-                    continue
-                else:
-                    pe_list2.append(pe)
-                    continue
-            for pb in pb_list1:
-                if math.isnan(pb):
-                    continue
-                else:
-                    pb_list2.append(pb)
-                    continue
-            avg_ps = round(statistics.mean(ps_list2),2)
-            avg_pe = round(statistics.mean(pe_list2),2)
-            avg_pb = round(statistics.mean(pb_list2),2)
-            avg_eps = round(statistics.mean(eps_list2),2)
-            avg_fwdpe = round(statistics.mean(fwdpe_list2),2)
-            avg_mkt_cap = round(statistics.mean(mkt_cap_list2),2)
-            ind_size = sum(mkt_cap_list2)
-            IndustryInfo.objects.update_or_create(
-                name = industry,
-                avg_pe=avg_pe,
-                avg_ps=avg_ps,
-                avg_pb=avg_pb,
-                avg_eps=avg_eps,
-                avg_fwdpe=avg_fwdpe,
-                avg_mkt_cap=avg_mkt_cap,
-                ind_size=ind_size)
-        except Exception:
-            time.sleep(30)
-# Gets Industry data
-
 
 def get_industry_list():
     req = Request("https://finviz.com/groups.ashx?g=industry&v=110&#o=name",headers={'User-Agent': 'Mozilla/5.0'})
@@ -268,18 +197,12 @@ def get_industry_list():
 #  python manage.py runserver
 #  python manage.py crontab run (hash)
 
-def get_ind_av():
-    industries = get_industry_list()
-    for industry in industries:
-        get_industry_info(industry)
-# Gets Industry averages, should take roughly 20-30 minutes
-
 def get_stock_info():
     industries = get_industry_list()
     for industry in industries:
         get_stock_dic(industry)
         for stock in stock_dic:
-            StockTest.objects.update_or_create(
+            StockInfo.objects.update_or_create(
                 name = stock_dic[stock]['ticker'],
                 industry = stock_dic[stock]['industry'],
                 sector = stock_dic[stock]['sector'],
@@ -327,7 +250,7 @@ big_ticka_list = []
 def get_big_stock_dic():
     bigindlist = get_bigindustry_list()
     newbigindlist=[]
-    for i in bigindlist:
+    for i in bigindlist[8:9]:
         i = i.lower()
         i = i.replace(" ", "")
         i = i.replace("&","")
@@ -464,14 +387,36 @@ def get_big_stock_dic():
         else:
             short_float_float = float(short_float[:-1])/100
 
+        df1 = pdr.data.get_data_yahoo(stock_ticker, start='1970-1-1', end=today)
+        time.sleep(.3)
+        pryce = df1['Close']
+        pryce = pryce.values.tolist()
+        df1 = pdr.data.get_data_yahoo(stock_ticker, start='1970-1-1', end=today)
+        time.sleep(.3)
+        deight1 = df1['Close']
+        deight = deight1.index.tolist()
+        deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
+        date_max = deight[0]
+        df1 = pdr.data.get_data_yahoo(stock_ticker, start=date_max, end=today)
+        time.sleep(.3)
+        pryce = df1['Close']
+        prices = pryce.values.tolist()
+        df1 = pdr.data.get_data_yahoo(stock_ticker, start=date_max, end=today)
+        time.sleep(.3)
+        deight1 = df1['Close']
+        deight = deight1.index.tolist()
+        dates = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
+        # Gets Prices and Corresponding Dates
+
         # gets revenue growth
-        big_stock_dic[ticker] = {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short':profit_short, 'profit_margin':profit_margin, 'sector': sector,'rev_growth': rev_growth, 'pe': pe,'fwdpe':fwdpe, 'profit_margin_float': profit_margin_float,'rev_growth_float':rev_growth_float,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'book_value':book_value,'bvps':bvps,'avg_volume_float':avg_volume_float,'shares_float_float':shares_float_float,'short_float_float':short_float_float}
+        big_stock_dic[ticker] = {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short':profit_short, 'profit_margin':profit_margin, 'sector': sector,'rev_growth': rev_growth, 'pe': pe,'fwdpe':fwdpe, 'profit_margin_float': profit_margin_float,'rev_growth_float':rev_growth_float,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'book_value':book_value,'bvps':bvps,'avg_volume_float':avg_volume_float,'shares_float_float':shares_float_float,'short_float_float':short_float_float,'prices':prices,'dates':dates}
+
     return big_stock_dic
 
 def get_big_stock_info():
     get_big_stock_dic()
     for stock in big_stock_dic:
-        StockTest.objects.update_or_create(
+        StockInfo.objects.update_or_create(
             name = big_stock_dic[stock]['ticker'],
             industry = big_stock_dic[stock]['industry'],
             sector = big_stock_dic[stock]['sector'],
@@ -499,5 +444,7 @@ def get_big_stock_info():
             bvps=big_stock_dic[stock]['bvps'],
             avg_volume_float=big_stock_dic[stock]['avg_volume_float'],
             shares_float_float=big_stock_dic[stock]['shares_float_float'],
-            short_float_float=big_stock_dic[stock]['short_float_float']
+            short_float_float=big_stock_dic[stock]['short_float_float'],
+            prices = {'prices':big_stock_dic[stock]['prices']},
+            dates = {'dates':big_stock_dic[stock]['dates']}
             )

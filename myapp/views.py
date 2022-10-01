@@ -1,40 +1,10 @@
-from audioop import avg
-from unicodedata import name
 from django.shortcuts import render
-from django.http import HttpResponse
-import yfinance as yf
-from urllib.request import Request, urlopen
-import re
-import yahoo_fin
-from yahoo_fin import options
-from yahoo_fin import stock_info
-import pandas_datareader as pdr
-import pandas_datareader.data as web
-from dateutil.relativedelta import relativedelta
-import datetime
-from datetime import datetime
-from datetime import date
-from datetime import time
-from finvizfinance.quote import finvizfinance
-from finvizfinance.screener.overview import Overview
 import math
-import statistics
-import time
 import plotly.graph_objects as go
 from plotly.offline import plot
-import pandas as pd
-import requests
-from myapp.models import IndustryInfo, StockTest
+from myapp.models import StockInfo
 from django.db import connection
 # Imports necessary packages
-today = date.today()
-date_1y = datetime.now() - relativedelta(years=1)
-date_2y = datetime.now() - relativedelta(years=2)
-date_3y = datetime.now() - relativedelta(years=3)
-date_5y = datetime.now() - relativedelta(years=5)
-date_10y = datetime.now() - relativedelta(years=10)
-date_250y = datetime.now() - relativedelta(years=250)
-date_ytd = datetime(today.year, 1,1)
 # Creates date choices for the chart
 DOLLAR_MAPPING = {
     'T': float(1000000000000),
@@ -67,42 +37,7 @@ def overview(request):
     text = (request.GET['text']).upper()
     # Pulls the ticker from the index.html form
 
-    df1 = pdr.data.get_data_yahoo(text, start='1970-1-1', end=today)
-    pryce = df1['Close']
-    pryce = pryce.values.tolist()
-    df1 = pdr.data.get_data_yahoo(text, start='1970-1-1', end=today)
-    deight1 = df1['Close']
-    deight = deight1.index.tolist()
-    deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
-    date_max = deight[0]
-    df1 = pdr.data.get_data_yahoo(text, start=date_max, end=today)
-    pryce = df1['Close']
-    pryce = pryce.values.tolist()
-    df1 = pdr.data.get_data_yahoo(text, start=date_max, end=today)
-    deight1 = df1['Close']
-    deight = deight1.index.tolist()
-    deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
-    # Gets Prices and Corresponding Dates
-
-    def line():
-        figure = go.Figure(data=[go.Line(x=deight,y=pryce)])
-        figure.update_xaxes(rangeslider_visible=True, 
-                            rangeselector=dict(
-        buttons=list([
-            dict(count=1, label="1m", step="month", stepmode="backward"),
-            dict(count=6, label="6m", step="month", stepmode="backward"),
-            dict(count=1, label="YTD", step="year", stepmode="todate"),
-            dict(count=1, label="1y", step="year", stepmode="backward"),
-            dict(step="all")]) , font_color="black"))
-        figure.update_layout(plot_bgcolor='#dddddd', paper_bgcolor ='#dddddd', font_color="black", title_font_color="black")
-        figure.update_traces(line_color="black")
-        figure.update_xaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#a5a5a5')
-        figure.update_yaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#a5a5a5')
-        line_div = plot(figure, output_type='div')
-        return line_div
-    # Creates chart
-
-    avg_list = StockTest.objects.values()
+    avg_list = StockInfo.objects.values()
     for x in avg_list:
         if x['name'] == text:
             ticker = x['name']
@@ -130,7 +65,6 @@ def overview(request):
             eps_float = eps
             if fwdpe == 0:
                 fwdpe = 'N/A'
-            fwdpe_float = fwdpe
             mkt_cap_short = x['mkt_cap_short']
             mkt_cap = x['mkt_cap']
             revenue_short = x['revenue_short']
@@ -157,18 +91,76 @@ def overview(request):
             avg_volume_float = x['avg_volume_float']
             shares_float_float =x['shares_float_float']
             short_float_float =x['short_float_float']
+            prices = x['prices']
+            prices = prices['prices']
+            dates = x['dates']
+            dates = dates['dates']
 
-    avg_list2 = IndustryInfo.objects.values()
-    for x in avg_list2:
-        if x['name'] == industry:
-            avg_pe = x['avg_pe']
-            avg_ps = x['avg_ps']
-            avg_pb = x['avg_pb']
-            avg_eps = x['avg_eps']
-            avg_fwdpe = x['avg_fwdpe']
-            avg_mkt_cap = x['avg_mkt_cap']
-            ind_size = x['ind_size']
-    # Gets variables from IndustryInfo object
+    def line():
+        figure = go.Figure(data=[go.Line(x=dates,y=prices)])
+        figure.update_xaxes(rangeslider_visible=True, 
+                            rangeselector=dict(
+        buttons=list([
+            dict(count=1, label="1m", step="month", stepmode="backward"),
+            dict(count=6, label="6m", step="month", stepmode="backward"),
+            dict(count=1, label="YTD", step="year", stepmode="todate"),
+            dict(count=1, label="1y", step="year", stepmode="backward"),
+            dict(step="all")]) , font_color="black"))
+        figure.update_layout(plot_bgcolor='#dddddd', paper_bgcolor ='#dddddd', font_color="black", title_font_color="black")
+        figure.update_traces(line_color="black")
+        figure.update_xaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#a5a5a5')
+        figure.update_yaxes(showline=True, linewidth=2, linecolor='black', gridcolor='#a5a5a5')
+        line_div = plot(figure, output_type='div')
+        return line_div
+    # Creates chart
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, AVG(pe) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
+    avg_pe = cursor.fetchall()
+    for x in avg_pe:
+        avg_pe = float(x[1])
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, AVG(ps) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
+    avg_ps = cursor.fetchall()
+    for x in avg_ps:
+        avg_ps = float(x[1])
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, AVG(pb) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
+    avg_pb = cursor.fetchall()
+    for x in avg_pb:
+        avg_pb = float(x[1])
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, AVG(eps) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
+    avg_eps = cursor.fetchall()
+    for x in avg_eps:
+        avg_eps = float(x[1])
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, AVG(fwdpe) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
+    avg_fwdpe = cursor.fetchall()
+    for x in avg_fwdpe:
+        avg_fwdpe = float(x[1])
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, AVG(mkt_cap) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
+    avg_mkt_cap = cursor.fetchall()
+    for x in avg_mkt_cap:
+        avg_mkt_cap = x[1]
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, COUNT(revenue) FROM myapp_stockinfo WHERE industry = %s',[industry])
+    numba_o_stocks_in_industry = cursor.fetchall()
+    for x in numba_o_stocks_in_industry:
+        numba_o_stocks_in_industry = float(x[1])
+
+    cursor = connection.cursor()
+    cursor.execute('SELECT name, SUM(mkt_cap) FROM myapp_stockinfo WHERE industry = %s',[industry])
+    ind_size = cursor.fetchall()
+    for x in ind_size:
+        ind_size = float(x[1])    
 
     try:
         dtc = round(((short_float_float * shares_float_float)/avg_volume_float),2)
@@ -179,17 +171,13 @@ def overview(request):
     profit_short = human_format(profit)
 
     mkt_share = '{:.2%}'.format(mkt_cap/ind_size)
-    avg_mkt_cap = human_format(avg_mkt_cap)
+
     ind_size = human_format(ind_size)
 
-    cursor = connection.cursor()
-    cursor.execute('SELECT id, COUNT(revenue) FROM myapp_stocktest WHERE industry = %s',[industry])
-    numba_o_stocks_in_industry = cursor.fetchall()
-    for x in numba_o_stocks_in_industry:
-        numba_o_stocks_in_industry = x[1]
+    avg_mkt_cap = human_format(avg_mkt_cap)
     
     cursor = connection.cursor()
-    cursor.execute('SELECT id, AVG(revenue) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT name, AVG(revenue) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     avg_rev = cursor.fetchall()
     for x in avg_rev:
         avg_rev = human_format(x[1])
@@ -198,7 +186,7 @@ def overview(request):
     how_much_above_or_below = revenue - avg_rev_float
 
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(revenue*revenue) - AVG(revenue)*AVG(revenue) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(revenue*revenue) - AVG(revenue)*AVG(revenue) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     top_var = cursor.fetchall()
     for x in top_var:
         top_var = x[0]
@@ -236,7 +224,7 @@ def overview(request):
     
 
     cursor = connection.cursor()
-    cursor.execute('SELECT id, AVG(profit) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT name, AVG(profit) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     avg_profit = cursor.fetchall()
     for x in avg_profit:
         avg_profit = human_format(x[1])
@@ -245,7 +233,7 @@ def overview(request):
     profit_dif = profit - avg_profit_float
 
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(profit*profit) - AVG(profit)*AVG(profit) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(profit*profit) - AVG(profit)*AVG(profit) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     profit_top_var = cursor.fetchall()
     for x in profit_top_var:
         profit_top_var = x[0]
@@ -282,7 +270,7 @@ def overview(request):
         profit_grade = 'F-'
         
     cursor = connection.cursor()
-    cursor.execute('SELECT id, AVG(rev_growth_float) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT name, AVG(rev_growth_float) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     avg_rev_growth = cursor.fetchall()
     for x in avg_rev_growth:
         avg_rev_growth = '{:.2%}'.format(x[1])
@@ -291,7 +279,7 @@ def overview(request):
     rev_growth_dif = rev_growth_float - avg_rev_growth_float
 
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(rev_growth_float*rev_growth_float) - AVG(rev_growth_float)*AVG(rev_growth_float) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(rev_growth_float*rev_growth_float) - AVG(rev_growth_float)*AVG(rev_growth_float) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     rev_growth_top_var = cursor.fetchall()
     for x in rev_growth_top_var:
         rev_growth_top_var = x[0]
@@ -330,7 +318,7 @@ def overview(request):
         rev_growth_grade = 'F-'
 
     cursor = connection.cursor()
-    cursor.execute('SELECT id, AVG(profit_margin_float) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT name, AVG(profit_margin_float) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     avg_profit_margin = cursor.fetchall()
     for x in avg_profit_margin:
         avg_profit_margin = '{:.2%}'.format(x[1])
@@ -339,7 +327,7 @@ def overview(request):
     profit_margin_dif = profit_margin_float - avg_profit_margin_float
 
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(profit_margin_float*profit_margin_float) - AVG(profit_margin_float)*AVG(profit_margin_float) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(profit_margin_float*profit_margin_float) - AVG(profit_margin_float)*AVG(profit_margin_float) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     profit_margin_top_var = cursor.fetchall()
     for x in profit_margin_top_var:
         profit_margin_top_var = x[0]
@@ -380,7 +368,7 @@ def overview(request):
     pe_dif = avg_pe - pe_float
 
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(pe*pe) - AVG(pe)*AVG(pe) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(pe*pe) - AVG(pe)*AVG(pe) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     pe_top_var = cursor.fetchall()
     for x in pe_top_var:
         pe_top_var = x[0]
@@ -421,7 +409,7 @@ def overview(request):
     ps_dif = avg_ps - ps_float
     
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(ps*ps) - AVG(ps)*AVG(ps) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(ps*ps) - AVG(ps)*AVG(ps) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     ps_top_var = cursor.fetchall()
     for x in ps_top_var:
         ps_top_var = x[0]
@@ -462,7 +450,7 @@ def overview(request):
     eps_dif = avg_eps - eps_float
     
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(eps*eps) - AVG(eps)*AVG(eps) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(eps*eps) - AVG(eps)*AVG(eps) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     eps_top_var = cursor.fetchall()
     for x in eps_top_var:
         eps_top_var = x[0]
@@ -503,7 +491,7 @@ def overview(request):
     fwdpe_dif = avg_fwdpe - fwdpe_float
     
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(fwdpe*fwdpe) - AVG(fwdpe)*AVG(fwdpe) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(fwdpe*fwdpe) - AVG(fwdpe)*AVG(fwdpe) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     fwdpe_top_var = cursor.fetchall()
     for x in fwdpe_top_var:
         fwdpe_top_var = x[0]
@@ -544,7 +532,7 @@ def overview(request):
     pb_dif = avg_pb - pb_float
     
     cursor = connection.cursor()
-    cursor.execute('SELECT AVG(pb*pb) - AVG(pb)*AVG(pb) FROM myapp_stocktest WHERE industry = %s GROUP BY industry',[industry])
+    cursor.execute('SELECT AVG(pb*pb) - AVG(pb)*AVG(pb) FROM myapp_stockinfo WHERE industry = %s GROUP BY industry',[industry])
     pb_top_var = cursor.fetchall()
     for x in pb_top_var:
         pb_top_var = x[0]
@@ -586,9 +574,15 @@ def overview(request):
         book_value = 0
     else:
         book_value = human_format(book_value)
-    
+
+    avg_pe = round(avg_pe,2)
+    avg_eps = round(avg_eps,2)
+    avg_ps = round(avg_ps,2)
+    avg_pb = round(avg_pb,2)
+    avg_fwdpe = round(avg_fwdpe,2)
+
     edgar_link_8k = 'https://www.sec.gov/edgar/search/#/q='+text+'&filter_forms=8-K'
     edgar_link_10k = 'https://www.sec.gov/edgar/search/#/q='+text+'&filter_forms=10-K'
     edgar_link_10q = 'https://www.sec.gov/edgar/search/#/q='+text+'&filter_forms=10-Q'
 
-    return render(request, 'overview.html', {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short': profit_short, 'profit_margin':profit_margin, 'profit_margin_float':profit_margin_float, 'sector': sector,'rev_growth': rev_growth, 'rev_growth_float':rev_growth_float,'deight': deight, 'pryce': pryce, 'line': line(), 'pe': pe,'fwdpe':fwdpe, 'avg_pe': avg_pe,'avg_ps':avg_ps,'avg_pb':avg_pb,'avg_eps':avg_eps,'avg_fwdpe':avg_fwdpe,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'avg_mkt_cap':avg_mkt_cap,'ind_size':ind_size,'mkt_share':mkt_share,'avg_rev':avg_rev,'avg_profit':avg_profit,'avg_rev_growth':avg_rev_growth,'avg_profit_margin':avg_profit_margin, 'grade':grade,'how_many_stdevs':how_many_stdevs,'profit_grade':profit_grade,'rev_growth_grade':rev_growth_grade,'profit_margin_grade':profit_margin_grade,'pe_grade':pe_grade,'ps_grade':ps_grade,'pb_grade':pb_grade,'eps_grade':eps_grade,'fwdpe_grade':fwdpe_grade,'edgar_link_10q':edgar_link_10q,'edgar_link_8k':edgar_link_8k, 'edgar_link_10k':edgar_link_10k,'dtc':dtc,'book_value':book_value})
+    return render(request, 'overview.html', {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short': profit_short, 'profit_margin':profit_margin, 'profit_margin_float':profit_margin_float, 'sector': sector,'rev_growth': rev_growth, 'rev_growth_float':rev_growth_float,'dates': dates, 'prices': prices, 'line': line(), 'pe': pe,'fwdpe':fwdpe, 'avg_pe': avg_pe,'avg_ps':avg_ps,'avg_pb':avg_pb,'avg_eps':avg_eps,'avg_fwdpe':avg_fwdpe,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'avg_mkt_cap':avg_mkt_cap,'ind_size':ind_size,'mkt_share':mkt_share,'avg_rev':avg_rev,'avg_profit':avg_profit,'avg_rev_growth':avg_rev_growth,'avg_profit_margin':avg_profit_margin, 'grade':grade,'how_many_stdevs':how_many_stdevs,'profit_grade':profit_grade,'rev_growth_grade':rev_growth_grade,'profit_margin_grade':profit_margin_grade,'pe_grade':pe_grade,'ps_grade':ps_grade,'pb_grade':pb_grade,'eps_grade':eps_grade,'fwdpe_grade':fwdpe_grade,'edgar_link_10q':edgar_link_10q,'edgar_link_8k':edgar_link_8k, 'edgar_link_10k':edgar_link_10k,'dtc':dtc,'book_value':book_value})
