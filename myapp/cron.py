@@ -250,7 +250,7 @@ big_ticka_list = []
 def get_big_stock_dic():
     bigindlist = get_bigindustry_list()
     newbigindlist=[]
-    for i in bigindlist[8:9]:
+    for i in bigindlist:
         i = i.lower()
         i = i.replace(" ", "")
         i = i.replace("&","")

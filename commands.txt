@@ -1,2 +1,2 @@
 docker build --tag nixreens .
-docker run 
+docker run --publish 8000:8000 python-django
