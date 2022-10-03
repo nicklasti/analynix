@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-dhtj1p$m2t!a^jkwejulscr^e^fi9mwwbn*96sl@x9rs80dqi4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
@@ -136,5 +136,5 @@ CACHES = {
 
 CRONJOBS = [
     ('0 0 * * *', 'myapp.cron.get_stock_info'),
-    ('0 12 * * *', 'myapp.cron.get_big_stock_info',)
+    ('0 12 * * *', 'myapp.cron.get_big_stock_info'),
 ]

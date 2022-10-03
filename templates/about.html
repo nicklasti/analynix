@@ -1,0 +1,118 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+
+    <meta name="description" content="Source code generated using layoutit.com">
+    <meta name="author" content="LayoutIt!">
+
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" >
+    <link rel="stylesheet" href="{% static 'style10.css' %}" >
+</head>
+
+<body>
+    <div class="container-fluid align-items-center justify-content-center">
+
+        <div class="topnav">
+            <a href="."> 
+                <img src="{% static 'long_logo.svg' %}" width="100" height="30" ALT="align box" ALIGN=CENTER>
+            </a>
+            <a href="./about">about</a>
+            <a href="./contact">contact</a>
+            <a href="./copyright">copyright</a>
+            <div class="search-container">
+                <form id="registerForm" method="GET" action="overview">
+                    <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
+                </form>
+            </div>
+        </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1><span class="bolded">what is this?</span></h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1>this is a stock screener and analysis tool i built as my first python/sql project</h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1><span class="bolded">how often does this update?</span></h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1>the db is refreshed with new data daily</h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1><span class="bolded">where do i source the data?</span></h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1>finviz and yahoo finance</h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1><span class="bolded">how are the grades computed?</span></h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1>a simple scale using standard deviations from the mean</h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1><span class="bolded">i got a 404 error, what does that mean?</span></h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1>you either  mispelled the ticker or entered a stock that doesn't exist in my db</h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1><span class="bolded">when will there be more features?</span></h1>
+                </div>
+            </div>
+
+            <div class="row mt-5 mb-5">
+                <div class = "container d-flex justify-content-center align-items-center">
+                    <h1>every week or so i'll be attempting to add to this</h1>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="{% static 'scripts4.js' %}"></script>
+
+</body>
+
+</html>

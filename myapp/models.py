@@ -36,3 +36,6 @@ class StockInfo(models.Model):
     dates = models.JSONField(default=dict)
     def __str__(self):
         return self.name
+
+class Cronjobtest(models.Model):
+    tester = models.TextField(default='default')
