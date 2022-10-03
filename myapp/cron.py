@@ -220,7 +220,7 @@ def get_industry_list():
 
 def get_stock_info():
     industries = get_industry_list()
-    for industry in industries[114:]:
+    for industry in industries:
         get_stock_dic(industry)
         for stock in stock_dic:
             StockInfo.objects.update_or_create(
@@ -263,7 +263,8 @@ def get_bigindustry_list():
     webpage = urlopen(req).read().decode('utf-8')
     industries = re.findall('(?<=class="tab-link">).*?(?=</a>)',webpage,re.DOTALL)
     industries = industries[:144]
-    big_industries = [industries[13],industries[17],industries[118],industries[8],industries[9],industries[37],industries[40],industries[43],industries[44],industries[62],industries[120],industries[121]]
+    big_industries = [industries[8],industries[9],industries[37],industries[40],industries[43],industries[44],industries[62],industries[120],industries[121],industries[13],industries[17],industries[118]]
+    big_industries = big_industries[1]
     return big_industries
 
 big_stock_dic={}
