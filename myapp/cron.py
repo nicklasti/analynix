@@ -263,8 +263,7 @@ def get_bigindustry_list():
     webpage = urlopen(req).read().decode('utf-8')
     industries = re.findall('(?<=class="tab-link">).*?(?=</a>)',webpage,re.DOTALL)
     industries = industries[:144]
-    big_industries = [industries[8],industries[9],industries[37],industries[40],industries[43],industries[44],industries[62],industries[120],industries[121],industries[13],industries[17],industries[118]]
-    big_industries = big_industries[1]
+    big_industries = [industries[120],industries[121],industries[8],industries[9],industries[37],industries[40],industries[43],industries[44],industries[62],industries[13],industries[17],industries[118]]
     return big_industries
 
 big_stock_dic={}
@@ -289,6 +288,7 @@ def get_big_stock_dic():
         try:
             for ticker in tickalist:
                 if ticker not in big_ticka_list:
+                    print(ticker)
                     big_ticka_list.append(ticker)
                 else: continue
         except:
@@ -301,21 +301,23 @@ def get_big_stock_dic():
         add_tickers_to_list(tickalist)
     
 
-    for i in newbigindlist:
+    for i in newbigindlist[1:]:
         for page in rlist:
             try:
                 get_tickers_from_page(i,page)
                 time.sleep(.3)
             except Exception:
                 time.sleep(3)
+                print("problem with adding tickers from a certain page from"+i)
     for stock_ticker in big_ticka_list:
         stock = None
         while stock == None:
             try:
                 stock = finvizfinance(stock_ticker).ticker_fundament()
-                time.sleep(2)
+                time.sleep(.3)
             except Exception:
-                time.sleep(10)
+                time.sleep(5)
+                print("problem with getting the actual ticker info for"+stock_ticker)
         # Stores the basic stock data as a variable
         industry = stock['Industry']
         sector = stock['Sector']
@@ -323,6 +325,7 @@ def get_big_stock_dic():
         ticker = stock_ticker
         # Gets the ticker
         company_name = stock['Company']
+        print(company_name)
         # Gets the company name
         beta = stock['Beta']
         beta = fix_dashes(beta)
@@ -411,17 +414,27 @@ def get_big_stock_dic():
         else:
             short_float_float = float(short_float[:-1])/100
 
-        df1 = pdr.data.get_data_yahoo(stock_ticker, start='1970-1-1', end=today)
-        time.sleep(.3)
-        pryce = df1['Close']
+        pryce = list()
+        while len(pryce) == 0:
+            try:
+                df1 = pdr.data.get_data_yahoo(stock_ticker, start='1970-1-1', end=today)
+                time.sleep(.3)
+                pryce = df1['Close']
+            except Exception:
+                time.sleep(5)
         pryce = pryce.values.tolist()
         deight1 = df1['Close']
         deight = deight1.index.tolist()
         deight = [datetime.strftime(d, '%Y-%m-%d') for d in deight]
         date_max = deight[0]
-        df1 = pdr.data.get_data_yahoo(stock_ticker, start=date_max, end=today)
-        time.sleep(.3)
-        pryce = df1['Close']
+        pryce = list()
+        while len(pryce) == 0:
+            try:
+                df1 = pdr.data.get_data_yahoo(stock_ticker, start=date_max, end=today)
+                time.sleep(.3)
+                pryce = df1['Close']
+            except Exception:
+                time.sleep(5)
         prices = pryce.values.tolist()
         deight1 = df1['Close']
         deight = deight1.index.tolist()
@@ -430,13 +443,14 @@ def get_big_stock_dic():
 
         # gets revenue growth
         big_stock_dic[ticker] = {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short':profit_short, 'profit_margin':profit_margin, 'sector': sector,'rev_growth': rev_growth, 'pe': pe,'fwdpe':fwdpe, 'profit_margin_float': profit_margin_float,'rev_growth_float':rev_growth_float,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'book_value':book_value,'bvps':bvps,'avg_volume_float':avg_volume_float,'shares_float_float':shares_float_float,'short_float_float':short_float_float,'prices':prices,'dates':dates}
-
+        print('added',ticker,'in the dictionary')
     return big_stock_dic
 
 def get_big_stock_info():
 
     get_big_stock_dic()
     for stock in big_stock_dic:
+        print ('saving:',big_stock_dic[stock]['ticker'])
         StockInfo.objects.update_or_create(
             name = big_stock_dic[stock]['ticker'],
             industry = big_stock_dic[stock]['industry'],
