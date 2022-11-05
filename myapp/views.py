@@ -2,7 +2,7 @@ from django.shortcuts import render
 import math
 import plotly.graph_objects as go
 from plotly.offline import plot
-from myapp.models import Cronjobtest, StockInfo
+from myapp.models import StockInfo
 from django.db import connection 
 
 # Imports necessary packages
@@ -49,13 +49,6 @@ def copyright(request):
 def overview(request):
     text = (request.GET['text']).upper()
     # Pulls the ticker from the index.html form
-
-    cron_objs = Cronjobtest.objects.values()
-    tester=[]
-    for x in cron_objs:
-        tester.append(x['tester'])
-
-
     avg_list = StockInfo.objects.values()
     for x in avg_list:
         if x['name'] == text:
@@ -605,4 +598,4 @@ def overview(request):
     edgar_link_10q = 'https://www.sec.gov/edgar/search/#/q='+text+'&filter_forms=10-Q'
         
 
-    return render(request, 'overview.html', {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short': profit_short, 'profit_margin':profit_margin, 'profit_margin_float':profit_margin_float, 'sector': sector,'rev_growth': rev_growth, 'rev_growth_float':rev_growth_float,'dates': dates, 'prices': prices, 'line': line(), 'pe': pe,'fwdpe':fwdpe, 'avg_pe': avg_pe,'avg_ps':avg_ps,'avg_pb':avg_pb,'avg_eps':avg_eps,'avg_fwdpe':avg_fwdpe,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'avg_mkt_cap':avg_mkt_cap,'ind_size':ind_size,'mkt_share':mkt_share,'avg_rev':avg_rev,'avg_profit':avg_profit,'avg_rev_growth':avg_rev_growth,'avg_profit_margin':avg_profit_margin, 'grade':grade,'how_many_stdevs':how_many_stdevs,'profit_grade':profit_grade,'rev_growth_grade':rev_growth_grade,'profit_margin_grade':profit_margin_grade,'pe_grade':pe_grade,'ps_grade':ps_grade,'pb_grade':pb_grade,'eps_grade':eps_grade,'fwdpe_grade':fwdpe_grade,'edgar_link_10q':edgar_link_10q,'edgar_link_8k':edgar_link_8k, 'edgar_link_10k':edgar_link_10k,'dtc':dtc,'book_value':book_value,'tester':tester})
+    return render(request, 'overview.html', {'company_name': company_name, 'ticker': ticker, 'industry': industry, 'beta': beta, 'mkt_cap' : mkt_cap,'mkt_cap_short': mkt_cap_short, 'revenue': revenue, 'revenue_short':revenue_short,'profit': profit, 'profit_short': profit_short, 'profit_margin':profit_margin, 'profit_margin_float':profit_margin_float, 'sector': sector,'rev_growth': rev_growth, 'rev_growth_float':rev_growth_float,'dates': dates, 'prices': prices, 'line': line(), 'pe': pe,'fwdpe':fwdpe, 'avg_pe': avg_pe,'avg_ps':avg_ps,'avg_pb':avg_pb,'avg_eps':avg_eps,'avg_fwdpe':avg_fwdpe,'ps':ps,'eps':eps,'pb':pb,'avg_volume':avg_volume,'shares_float':shares_float,'short_float':short_float,'avg_mkt_cap':avg_mkt_cap,'ind_size':ind_size,'mkt_share':mkt_share,'avg_rev':avg_rev,'avg_profit':avg_profit,'avg_rev_growth':avg_rev_growth,'avg_profit_margin':avg_profit_margin, 'grade':grade,'how_many_stdevs':how_many_stdevs,'profit_grade':profit_grade,'rev_growth_grade':rev_growth_grade,'profit_margin_grade':profit_margin_grade,'pe_grade':pe_grade,'ps_grade':ps_grade,'pb_grade':pb_grade,'eps_grade':eps_grade,'fwdpe_grade':fwdpe_grade,'edgar_link_10q':edgar_link_10q,'edgar_link_8k':edgar_link_8k, 'edgar_link_10k':edgar_link_10k,'dtc':dtc,'book_value':book_value})

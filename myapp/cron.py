@@ -2,7 +2,6 @@
 # Periodic Caching System:
 
 from myapp.models import StockInfo
-from myapp.models import Cronjobtest
 from finvizfinance.screener.valuation import Valuation
 from finvizfinance.quote import finvizfinance
 import pandas_datareader as pdr
@@ -482,11 +481,4 @@ def get_big_stock_info():
             short_float_float=big_stock_dic[stock]['short_float_float'],
             prices = {'prices':big_stock_dic[stock]['prices']},
             dates = {'dates':big_stock_dic[stock]['dates']}
-            )
-
-
-
-def crondocker_test():
-    Cronjobtest.objects.create(
-            tester = 'test'
             )
