@@ -11,7 +11,7 @@
     <title>Nixreenr</title>
     <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
 
-    <meta name="description" content="Search stocks and get a basic overview from my perspective. This is first full stack project using python html and sql.">
+    <meta name="description" content="'Nick's Screener' ... Do you get it? This is my first full stack project using python html and sql. Search some stocks and have some fun :) ">
     <meta name="author" content="Nick Lastihenos">
 
     <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" >
@@ -30,6 +30,7 @@
 
         <div class="row mt-5">
             <div class = "container d-flex justify-content-center align-items-center">
+                <h3>Enter a stock:&nbsp&nbsp</h3>
                 <form id="registerForm" method="GET" action="overview">
                     <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase" value="AAPL">
                 </form>
@@ -44,7 +45,7 @@
         </div>
     </div>
 
-    <script src="{% static 'scripts4.js' %}"></script>
+    <script src="{% static 'scripts.js' %}"></script>
 </body>
 
 </html>

@@ -1,0 +1,436 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+
+    <meta name="description" content="'Nick's Screener' ... Do you get it? This is my first full stack project using python html and sql. Search some stocks and have some fun :) ">
+    <meta name="author" content="Nick Lastihenos">
+
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'style10.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+<div class="container-fluid align-items-center justify-content-center">
+    <div class="topnav">
+        <a href="."> 
+            <img src="{% static 'long_logo.svg' %}" width="100" height="30" ALT="align box" ALIGN=CENTER>
+        </a>
+        <a href="./about">about</a>
+        <a href="./contact">contact</a>
+        <a href="./copyright">copyright</a>
+        <a href="./beststocks">best stocks</a>
+        <a href="./worststocks">worst stocks</a>
+        <div class="search-container">
+            <form id="registerForm" method="GET" action="overview">
+                <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
+            </form>
+        </div>
+      </div>
+
+    <section class="section">
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">Best Stocks</th>
+                            <th scope="col">Company</th>
+                            <th scope="col">Industry</th>
+                            <th scope="col">Mkt Cap</th>
+                            <th scope="col">Mkt Share</th>
+                            <th scope="col">Avg Vol</th>
+                            <th scope="col">DTC</th>
+                            <th scope="col">P/S</th>
+                            <th scope="col">P/B</th>
+                            <th scope="col">EPS</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr>
+                            <td>1. {{one}}</td>
+                            <td><a href="./overview?text={{one}}">{{onedata.company_name}}</a></td>
+                            <td>{{onedata.industry}}</td>
+                            <td>{{onedata.mkt_cap_short}}</td>
+                            <td>{{onedata.mkt_share}}</td>
+                            <td>{{onedata.avg_volume}}</td>
+                            <td>{{onedata.dtc}}</td>
+                            <td>{{onedata.ps}}</td>
+                            <td>{{onedata.pb}}</td>
+                            <td>{{onedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>2. {{two}}</td>
+                            <td><a href="./overview?text={{two}}">{{twodata.company_name}}</a></td>
+                            <td>{{twodata.industry}}</td>
+                            <td>{{twodata.mkt_cap_short}}</td>
+                            <td>{{twodata.mkt_share}}</td>
+                            <td>{{twodata.avg_volume}}</td>
+                            <td>{{twodata.dtc}}</td>
+                            <td>{{twodata.ps}}</td>
+                            <td>{{twodata.pb}}</td>
+                            <td>{{twodata.eps}}</td>
+                            
+                        </tr>
+                        <tr>
+                            <td>3. {{three}}</td>
+                            <td><a href="./overview?text={{three}}">{{threedata.company_name}}</a></td>
+                            <td>{{threedata.industry}}</td>
+                            <td>{{threedata.mkt_cap_short}}</td>
+                            <td>{{threedata.mkt_share}}</td>
+                            <td>{{threedata.avg_volume}}</td>
+                            <td>{{threedata.dtc}}</td>
+                            <td>{{threedata.ps}}</td>
+                            <td>{{threedata.pb}}</td>
+                            <td>{{threedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>4. {{four}}</td>
+                            <td><a href="./overview?text={{four}}">{{fourdata.company_name}}</a></td>
+                            <td>{{fourdata.industry}}</td>
+                            <td>{{fourdata.mkt_cap_short}}</td>
+                            <td>{{fourdata.mkt_share}}</td>
+                            <td>{{fourdata.avg_volume}}</td>
+                            <td>{{fourdata.dtc}}</td>
+                            <td>{{fourdata.ps}}</td>
+                            <td>{{fourdata.pb}}</td>
+                            <td>{{fourdata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>5. {{five}}</td>
+                            <td><a href="./overview?text={{five}}">{{fivedata.company_name}}</a></td>
+                            <td>{{fivedata.industry}}</td>
+                            <td>{{fivedata.mkt_cap_short}}</td>
+                            <td>{{fivedata.mkt_share}}</td>
+                            <td>{{fivedata.avg_volume}}</td>
+                            <td>{{fivedata.dtc}}</td>
+                            <td>{{fivedata.ps}}</td>
+                            <td>{{fivedata.pb}}</td>
+                            <td>{{fivedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>6. {{six}}</td>
+                            <td><a href="./overview?text={{six}}">{{sixdata.company_name}}</a></td>
+                            <td>{{sixdata.industry}}</td>
+                            <td>{{sixdata.mkt_cap_short}}</td>
+                            <td>{{sixdata.mkt_share}}</td>
+                            <td>{{sixdata.avg_volume}}</td>
+                            <td>{{sixdata.dtc}}</td>
+                            <td>{{sixdata.ps}}</td>
+                            <td>{{sixdata.pb}}</td>
+                            <td>{{sixdata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>7. {{seven}}</td>
+                            <td><a href="./overview?text={{seven}}">{{sevendata.company_name}}</a></td>
+                            <td>{{sevendata.industry}}</td>
+                            <td>{{sevendata.mkt_cap_short}}</td>
+                            <td>{{sevendata.mkt_share}}</td>
+                            <td>{{sevendata.avg_volume}}</td>
+                            <td>{{sevendata.dtc}}</td>
+                            <td>{{sevendata.ps}}</td>
+                            <td>{{sevendata.pb}}</td>
+                            <td>{{sevendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>8. {{eight}}</td>
+                            <td><a href="./overview?text={{eight}}">{{eightdata.company_name}}</a></td>
+                            <td>{{eightdata.industry}}</td>
+                            <td>{{eightdata.mkt_cap_short}}</td>
+                            <td>{{eightdata.mkt_share}}</td>
+                            <td>{{eightdata.avg_volume}}</td>
+                            <td>{{eightdata.dtc}}</td>
+                            <td>{{eightdata.ps}}</td>
+                            <td>{{eightdata.pb}}</td>
+                            <td>{{eightdata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>9. {{nine}}</td>
+                            <td><a href="./overview?text={{nine}}">{{ninedata.company_name}}</a></td>
+                            <td>{{ninedata.industry}}</td>
+                            <td>{{ninedata.mkt_cap_short}}</td>
+                            <td>{{ninedata.mkt_share}}</td>
+                            <td>{{ninedata.avg_volume}}</td>
+                            <td>{{ninedata.dtc}}</td>
+                            <td>{{ninedata.ps}}</td>
+                            <td>{{ninedata.pb}}</td>
+                            <td>{{ninedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>10. {{ten}}</td>
+                            <td><a href="./overview?text={{ten}}">{{tendata.company_name}}</a></td>
+                            <td>{{tendata.industry}}</td>
+                            <td>{{tendata.mkt_cap_short}}</td>
+                            <td>{{tendata.mkt_share}}</td>
+                            <td>{{tendata.avg_volume}}</td>
+                            <td>{{tendata.dtc}}</td>
+                            <td>{{tendata.ps}}</td>
+                            <td>{{tendata.pb}}</td>
+                            <td>{{tendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>11. {{eleven}}</td>
+                            <td><a href="./overview?text={{eleven}}">{{elevendata.company_name}}</a></td>
+                            <td>{{elevendata.industry}}</td>
+                            <td>{{elevendata.mkt_cap_short}}</td>
+                            <td>{{elevendata.mkt_share}}</td>
+                            <td>{{elevendata.avg_volume}}</td>
+                            <td>{{elevendata.dtc}}</td>
+                            <td>{{elevendata.ps}}</td>
+                            <td>{{elevendata.pb}}</td>
+                            <td>{{elevendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>12. {{twelve}}</td>
+                            <td><a href="./overview?text={{twelve}}">{{twelvedata.company_name}}</a></td>
+                            <td>{{twelvedata.industry}}</td>
+                            <td>{{twelvedata.mkt_cap_short}}</td>
+                            <td>{{twelvedata.mkt_share}}</td>
+                            <td>{{twelvedata.avg_volume}}</td>
+                            <td>{{twelvedata.dtc}}</td>
+                            <td>{{twelvedata.ps}}</td>
+                            <td>{{twelvedata.pb}}</td>
+                            <td>{{twelvedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>13. {{thirteen}}</td>
+                            <td><a href="./overview?text={{thirteen}}">{{thirteendata.company_name}}</a></td>
+                            <td>{{thirteendata.industry}}</td>
+                            <td>{{thirteendata.mkt_cap_short}}</td>
+                            <td>{{thirteendata.mkt_share}}</td>
+                            <td>{{thirteendata.avg_volume}}</td>
+                            <td>{{thirteendata.dtc}}</td>
+                            <td>{{thirteendata.ps}}</td>
+                            <td>{{thirteendata.pb}}</td>
+                            <td>{{thirteendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>14. {{fourteen}}</td>
+                            <td><a href="./overview?text={{fourteen}}">{{fourteendata.company_name}}</a></td>
+                            <td>{{fourteendata.industry}}</td>
+                            <td>{{fourteendata.mkt_cap_short}}</td>
+                            <td>{{fourteendata.mkt_share}}</td>
+                            <td>{{fourteendata.avg_volume}}</td>
+                            <td>{{fourteendata.dtc}}</td>
+                            <td>{{fourteendata.ps}}</td>
+                            <td>{{fourteendata.pb}}</td>
+                            <td>{{fourteendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>15. {{fifteen}}</td>
+                            <td><a href="./overview?text={{fifteen}}">{{fifteendata.company_name}}</a></td>
+                            <td>{{fifteendata.industry}}</td>
+                            <td>{{fifteendata.mkt_cap_short}}</td>
+                            <td>{{fifteendata.mkt_share}}</td>
+                            <td>{{fifteendata.avg_volume}}</td>
+                            <td>{{fifteendata.dtc}}</td>
+                            <td>{{fifteendata.ps}}</td>
+                            <td>{{fifteendata.pb}}</td>
+                            <td>{{fifteendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>16. {{sixteen}}</td>
+                            <td><a href="./overview?text={{sixteen}}">{{sixteendata.company_name}}</a></td>
+                            <td>{{sixteendata.industry}}</td>
+                            <td>{{sixteendata.mkt_cap_short}}</td>
+                            <td>{{sixteendata.mkt_share}}</td>
+                            <td>{{sixteendata.avg_volume}}</td>
+                            <td>{{sixteendata.dtc}}</td>
+                            <td>{{sixteendata.ps}}</td>
+                            <td>{{sixteendata.pb}}</td>
+                            <td>{{sixteendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>17. {{seventeen}}</td>
+                            <td><a href="./overview?text={{seventeen}}">{{seventeendata.company_name}}</a></td>
+                            <td>{{seventeendata.industry}}</td>
+                            <td>{{seventeendata.mkt_cap_short}}</td>
+                            <td>{{seventeendata.mkt_share}}</td>
+                            <td>{{seventeendata.avg_volume}}</td>
+                            <td>{{seventeendata.dtc}}</td>
+                            <td>{{seventeendata.ps}}</td>
+                            <td>{{seventeendata.pb}}</td>
+                            <td>{{seventeendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>18. {{eighteen}}</td>
+                            <td><a href="./overview?text={{eighteen}}">{{eighteendata.company_name}}</a></td>
+                            <td>{{eighteendata.industry}}</td>
+                            <td>{{eighteendata.mkt_cap_short}}</td>
+                            <td>{{eighteendata.mkt_share}}</td>
+                            <td>{{eighteendata.avg_volume}}</td>
+                            <td>{{eighteendata.dtc}}</td>
+                            <td>{{eighteendata.ps}}</td>
+                            <td>{{eighteendata.pb}}</td>
+                            <td>{{eighteendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>19. {{nineteen}}</td>
+                            <td><a href="./overview?text={{nineteen}}">{{nineteendata.company_name}}</a></td>
+                            <td>{{nineteendata.industry}}</td>
+                            <td>{{nineteendata.mkt_cap_short}}</td>
+                            <td>{{nineteendata.mkt_share}}</td>
+                            <td>{{nineteendata.avg_volume}}</td>
+                            <td>{{nineteendata.dtc}}</td>
+                            <td>{{nineteendata.ps}}</td>
+                            <td>{{nineteendata.pb}}</td>
+                            <td>{{nineteendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>20. {{twenty}}</td>
+                            <td><a href="./overview?text={{twenty}}">{{twentydata.company_name}}</a></td>
+                            <td>{{twentydata.industry}}</td>
+                            <td>{{twentydata.mkt_cap_short}}</td>
+                            <td>{{twentydata.mkt_share}}</td>
+                            <td>{{twentydata.avg_volume}}</td>
+                            <td>{{twentydata.dtc}}</td>
+                            <td>{{twentydata.ps}}</td>
+                            <td>{{twentydata.pb}}</td>
+                            <td>{{twentydata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>21. {{twentyone}}</td>
+                            <td><a href="./overview?text={{twentyone}}">{{twentyonedata.company_name}}</a></td>
+                            <td>{{twentyonedata.industry}}</td>
+                            <td>{{twentyonedata.mkt_cap_short}}</td>
+                            <td>{{twentyonedata.mkt_share}}</td>
+                            <td>{{twentyonedata.avg_volume}}</td>
+                            <td>{{twentyonedata.dtc}}</td>
+                            <td>{{twentyonedata.ps}}</td>
+                            <td>{{twentyonedata.pb}}</td>
+                            <td>{{twentyonedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>22. {{twentytwo}}</td>
+                            <td><a href="./overview?text={{twentytwo}}">{{twentytwodata.company_name}}</a></td>
+                            <td>{{twentytwodata.industry}}</td>
+                            <td>{{twentytwodata.mkt_cap_short}}</td>
+                            <td>{{twentytwodata.mkt_share}}</td>
+                            <td>{{twentytwodata.avg_volume}}</td>
+                            <td>{{twentytwodata.dtc}}</td>
+                            <td>{{twentytwodata.ps}}</td>
+                            <td>{{twentytwodata.pb}}</td>
+                            <td>{{twentytwodata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>23. {{twentythree}}</td>
+                            <td><a href="./overview?text={{twentythree}}">{{twentythreedata.company_name}}</a></td>
+                            <td>{{twentythreedata.industry}}</td>
+                            <td>{{twentythreedata.mkt_cap_short}}</td>
+                            <td>{{twentythreedata.mkt_share}}</td>
+                            <td>{{twentythreedata.avg_volume}}</td>
+                            <td>{{twentythreedata.dtc}}</td>
+                            <td>{{twentythreedata.ps}}</td>
+                            <td>{{twentythreedata.pb}}</td>
+                            <td>{{twentythreedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>24. {{twentyfour}}</td>
+                            <td><a href="./overview?text={{twentyfour}}">{{twentyfourdata.company_name}}</a></td>
+                            <td>{{twentyfourdata.industry}}</td>
+                            <td>{{twentyfourdata.mkt_cap_short}}</td>
+                            <td>{{twentyfourdata.mkt_share}}</td>
+                            <td>{{twentyfourdata.avg_volume}}</td>
+                            <td>{{twentyfourdata.dtc}}</td>
+                            <td>{{twentyfourdata.ps}}</td>
+                            <td>{{twentyfourdata.pb}}</td>
+                            <td>{{twentyfourdata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>25. {{twentyfive}}</td>
+                            <td><a href="./overview?text={{twentyfive}}">{{twentyfivedata.company_name}}</a></td>
+                            <td>{{twentyfivedata.industry}}</td>
+                            <td>{{twentyfivedata.mkt_cap_short}}</td>
+                            <td>{{twentyfivedata.mkt_share}}</td>
+                            <td>{{twentyfivedata.avg_volume}}</td>
+                            <td>{{twentyfivedata.dtc}}</td>
+                            <td>{{twentyfivedata.ps}}</td>
+                            <td>{{twentyfivedata.pb}}</td>
+                            <td>{{twentyfivedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>26. {{twentysix}}</td>
+                            <td><a href="./overview?text={{twentysix}}">{{twentysixdata.company_name}}</a></td>
+                            <td>{{twentysixdata.industry}}</td>
+                            <td>{{twentysixdata.mkt_cap_short}}</td>
+                            <td>{{twentysixdata.mkt_share}}</td>
+                            <td>{{twentysixdata.avg_volume}}</td>
+                            <td>{{twentysixdata.dtc}}</td>
+                            <td>{{twentysixdata.ps}}</td>
+                            <td>{{twentysixdata.pb}}</td>
+                            <td>{{twentysixdata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>27. {{twentyseven}}</td>
+                            <td><a href="./overview?text={{twentyseven}}">{{twentysevendata.company_name}}</a></td>
+                            <td>{{twentysevendata.industry}}</td>
+                            <td>{{twentysevendata.mkt_cap_short}}</td>
+                            <td>{{twentysevendata.mkt_share}}</td>
+                            <td>{{twentysevendata.avg_volume}}</td>
+                            <td>{{twentysevendata.dtc}}</td>
+                            <td>{{twentysevendata.ps}}</td>
+                            <td>{{twentysevendata.pb}}</td>
+                            <td>{{twentysevendata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>28. {{twentyeight}}</td>
+                            <td><a href="./overview?text={{twentyeight}}">{{twentyeightdata.company_name}}</a></td>
+                            <td>{{twentyeightdata.industry}}</td>
+                            <td>{{twentyeightdata.mkt_cap_short}}</td>
+                            <td>{{twentyeightdata.mkt_share}}</td>
+                            <td>{{twentyeightdata.avg_volume}}</td>
+                            <td>{{twentyeightdata.dtc}}</td>
+                            <td>{{twentyeightdata.ps}}</td>
+                            <td>{{twentyeightdata.pb}}</td>
+                            <td>{{twentyeightdata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>29. {{twentynine}}</td>
+                            <td><a href="./overview?text={{twentynine}}">{{twentyninedata.company_name}}</a></td>
+                            <td>{{twentyninedata.industry}}</td>
+                            <td>{{twentyninedata.mkt_cap_short}}</td>
+                            <td>{{twentyninedata.mkt_share}}</td>
+                            <td>{{twentyninedata.avg_volume}}</td>
+                            <td>{{twentyninedata.dtc}}</td>
+                            <td>{{twentyninedata.ps}}</td>
+                            <td>{{twentyninedata.pb}}</td>
+                            <td>{{twentyninedata.eps}}</td>
+                        </tr>
+                        <tr>
+                            <td>30. {{thirty}}</td>
+                            <td><a href="./overview?text={{thirty}}">{{thirtydata.company_name}}</a></td>
+                            <td>{{thirtydata.industry}}</td>
+                            <td>{{thirtydata.mkt_cap_short}}</td>
+                            <td>{{thirtydata.mkt_share}}</td>
+                            <td>{{thirtydata.avg_volume}}</td>
+                            <td>{{thirtydata.dtc}}</td>
+                            <td>{{thirtydata.ps}}</td>
+                            <td>{{thirtydata.pb}}</td>
+                            <td>{{thirtydata.eps}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+    <script src="{% static 'jquery.min.js' %}"></script>
+    <script src="{% static 'bootstrap.min.js' %}"></script>
+    <script src="{% static 'scripts.js' %}"></script>
+    <script src="{% static 'https://cdn.jsdelivr.net/npm/chart.js@3.8.2/dist/chart.min.js' %}"></script>
+
+</body>
+
+</html>

@@ -13,4 +13,10 @@ urlpatterns = [
 
     path('copyright', views.copyright, name='copyright'),
 
+    path('404', views.error_404_view, name='404'),
+
+    path('beststocks', views.beststocks, name='beststocks'),
+
+    path('worststocks', views.worststocks, name='worststocks'),
+
 ]

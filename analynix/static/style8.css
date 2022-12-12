@@ -1,0 +1,21 @@
+body {
+    background-color: #0f0f0f;
+    font-family: verdana;
+    font: #ffffff;
+}
+
+
+.bolded {
+    font-weight: bold;
+}
+
+.thead-inverse th {
+    background: black;
+    color: white;
+}
+
+.darktheme {
+    background-color: #0f0f0f;
+    background: #0f0f0f;
+    color: #ffffff;
+}

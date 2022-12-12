@@ -755,6 +755,7 @@ pre code {
 }
 
 .container {
+  background-color: #014c8c;
   position: relative;
   margin-left: auto;
   margin-right: auto;

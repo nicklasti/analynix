@@ -1,0 +1,51 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+
+    <meta name="description" content="'Nick's Screener' ... Do you get it? This is my first full stack project using python html and sql. Search some stocks and have some fun :) ">
+    <meta name="author" content="Nick Lastihenos">
+
+    <link rel="stylesheet" href="{% static 'bootstrap.min.css' %}" >
+    <link rel="stylesheet" href="{% static 'style10.css' %}" >
+</head>
+
+<body>
+
+    <div class="container-fluid enterbox">
+
+        <div class="row mt-5">
+            <div class = "container d-flex justify-content-center align-items-center">
+            <img src="{% static 'wrong_logo.svg' %}" width="200%" height="85% alt='You entered a stock that is not in the database.'">
+            </div>
+        </div>
+
+        <div class="row mt-5">
+            <div class = "container d-flex justify-content-center align-items-center">
+                <h3>Enter a stock:&nbsp&nbsp</h3>
+                <form id="registerForm" method="GET" action="overview">
+                    <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase" value="AAPL">
+                </form>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row mt-1">
+        <div class = "container d-flex justify-content-center align-items-center">
+            <h5>DISCLAIMER: Not financial advice.</h5>
+        </div>
+    </div>
+
+    <script src="{% static 'scripts.js' %}"></script>
+</body>
+
+</html>

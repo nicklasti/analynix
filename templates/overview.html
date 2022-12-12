@@ -11,7 +11,7 @@
     <title>Nixreenr</title>
     <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
 
-    <meta name="description" content="Search stocks and get a basic overview from my perspective. This is first full stack project using python html and sql.">
+    <meta name="description" content="'Nick's Screener' ... Do you get it? This is my first full stack project using python html and sql. Search some stocks and have some fun :) ">
     <meta name="author" content="Nick Lastihenos">
 
     <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
@@ -29,6 +29,8 @@
         <a href="./about">about</a>
         <a href="./contact">contact</a>
         <a href="./copyright">copyright</a>
+        <a href="./beststocks">best stocks</a>
+        <a href="./worststocks">worst stocks</a>
         <div class="search-container">
             <form id="registerForm" method="GET" action="overview">
                 <input type="text" name="text" id="text" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase">
@@ -42,14 +44,15 @@
                 <div class="card-text-white bg-dark">
                     <div class="card-body p-2 p-2">
                         <div class="darktheme">
-                            <h4 class="bolded" style="color: rgb(8, 76, 43);">{{company_name}}&nbsp&nbsp{{ticker}}</h4>
-                            <h6 style="color:black;"><span class="bolded">Sector:</span>&nbsp{{sector}}&nbsp</h6>
-                            <h6 style="color:black"><span class="bolded">Industry:</span>&nbsp{{industry}}</h6>
+                            <h4 class="bolded" style="color: rgb(8, 76, 43);">{{stock.company_name}}&nbsp&nbsp{{stock.name}}&nbsp&nbsp${{stock.stock_price}}</h4>
+                            <h6 style="color: rgb(155, 155, 155);">Last Updated {{stock.last_update}}&nbspEST</h6>
+                            <h6 style="color:black;"><span class="bolded">Sector:</span>&nbsp{{stock.sector}}&nbsp</h6>
+                            <h6 style="color:black"><span class="bolded">Industry:</span>&nbsp{{stock.industry}}</h6>
                             <a target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm" href={{edgar_link_8k}} role="button">8-K</a>
                                             <a target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm" href={{edgar_link_10q}} role="button">10-Q</a>
                                             <a target="_blank" rel="noopener noreferrer" class="btn btn-success btn-sm" href={{edgar_link_10k}} role="button">10-K</a>
                             {% autoescape off %}
-                            {{line}}
+                            {{chart}}
                             {% endautoescape %}
                             <h5 class="card-title" style="color: rgb(8, 76, 43);">Company Size</h5>
                             <table class="table">
@@ -64,11 +67,11 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>${{book_value}}</td>
-                                        <td>${{mkt_cap_short}}</td>
-                                        <td>{{mkt_share}}</td>
-                                        <td>${{avg_mkt_cap}}</td>
-                                        <td>${{ind_size}}</td>
+                                        <td>${{stock.book_value}}</td>
+                                        <td>${{stock.mkt_cap_short}}</td>
+                                        <td>{{stock.mkt_share}}</td>
+                                        <td>${{stock.avg_mkt_cap}}</td>
+                                        <td>${{stock.ind_size}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -85,11 +88,11 @@
                                 </thead>
                                 <tbody>
                                     <tr>
-                                        <td>{{beta}}</td>
-                                        <td>{{avg_volume}}</td>
-                                        <td>{{shares_float}}</td>
-                                        <td>{{short_float}}</td>
-                                        <td>{{dtc}}</td>
+                                        <td>{{stock.beta}}</td>
+                                        <td>{{stock.avg_volume}}</td>
+                                        <td>{{stock.shares_float}}</td>
+                                        <td>{{stock.short_float}}</td>
+                                        <td>{{stock.dtc}}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -104,7 +107,7 @@
                         <thead>
                             <tr>
                                 <th scope="col"></th>
-                                <th scope="col">{{ticker}}</th>
+                                <th scope="col">{{stock.ticker}}</th>
                                 <th scope="col">Ind Avg</th>
                                 <th scope="col">Grade</th>
                             </tr>
@@ -112,27 +115,27 @@
                         <tbody>
                             <tr>
                                 <td>Revenue</td>
-                                <td>${{revenue_short}}</td>
-                                <td>${{avg_rev}}</td>
-                                <td>{{grade}}</td>
+                                <td>${{stock.revenue_short}}</td>
+                                <td>${{stock.avg_rev}}</td>
+                                <td>{{stock.grade}}</td>
                             </tr>
                             <tr>
                                 <td>Revenue Growth (Q/Q)</td>
-                                <td>{{rev_growth}}</td>
-                                <td>{{avg_rev_growth}}</td>
-                                <td>{{rev_growth_grade}}</td>
+                                <td>{{stock.rev_growth}}</td>
+                                <td>{{stock.avg_rev_growth}}</td>
+                                <td>{{stock.rev_growth_grade}}</td>
                             </tr>
                             <tr>
                                 <td>Earnings</td>
-                                <td>${{profit_short}}</td>
-                                <td>${{avg_profit}}</td>
-                                <td>{{profit_grade}}</td>
+                                <td>${{stock.profit_short}}</td>
+                                <td>${{stock.avg_profit}}</td>
+                                <td>{{stock.profit_grade}}</td>
                             </tr>
                             <tr>
                                 <td>Profit Margin</td>
-                                <td>{{profit_margin}}</td>
-                                <td>{{avg_profit_margin}}</td>
-                                <td>{{profit_margin_grade}}</td>
+                                <td>{{stock.profit_margin}}</td>
+                                <td>{{stock.avg_profit_margin}}</td>
+                                <td>{{stock.profit_margin_grade}}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -142,7 +145,7 @@
                     <thead>
                         <tr>
                             <th scope="col"></th>
-                            <th scope="col">{{ticker}}</th>
+                            <th scope="col">{{stock.ticker}}</th>
                             <th scope="col">Ind Avg</th>
                             <th scope="col">Grade</th>
                         </tr>
@@ -150,36 +153,42 @@
                     <tbody>
                         <tr>
                             <td>P/E</td>
-                            <td>{{pe}}</td>
-                            <td>{{avg_pe}}</td>
-                            <td>{{pe_grade}}</td>
+                            <td>{{stock.pe}}</td>
+                            <td>{{stock.avg_pe}}</td>
+                            <td>{{stock.pe_grade}}</td>
                         </tr>
                         <tr>
                             <td>Fwd P/E</td>
-                            <td>{{fwdpe}}</td>
-                            <td>{{avg_fwdpe}}</td>
-                            <td>{{fwdpe_grade}}</td>
+                            <td>{{stock.fwdpe}}</td>
+                            <td>{{stock.avg_fwdpe}}</td>
+                            <td>{{stock.fwdpe_grade}}</td>
                         </tr>
                         <tr>
                             <td>EPS</td>
-                            <td>{{eps}}</td>
-                            <td>{{avg_eps}}</td>
-                            <td>{{eps_grade}}</td>
+                            <td>{{stock.eps}}</td>
+                            <td>{{stock.avg_eps}}</td>
+                            <td>{{stock.eps_grade}}</td>
                         </tr>
                         <tr>
                             <td>P/S</td>
-                            <td>{{ps}}</td>
-                            <td>{{avg_ps}}</td>
-                            <td>{{ps_grade}}</td>
+                            <td>{{stock.ps}}</td>
+                            <td>{{stock.avg_ps}}</td>
+                            <td>{{stock.ps_grade}}</td>
                         </tr>
                         <tr>
                             <td>P/B</td>
-                            <td>{{pb}}</td>
-                            <td>{{avg_pb}}</td>
-                            <td>{{pb_grade}}</td>
+                            <td>{{stock.pb}}</td>
+                            <td>{{stock.avg_pb}}</td>
+                            <td>{{stock.pb_grade}}</td>
                         </tr>
                     </tbody>
                 </table>
+                <!-- <div class="row mt-5">
+                    <div class = "container d-flex justify-content-center align-items-center">
+                        <h2>Overall Grade:&nbsp{{stock.overall_grade}}</h2>
+                    </div>
+                </div>
+                <h1>&nbsp&nbsp</h1> -->
             </div>
         </div>
     </section>
@@ -188,7 +197,7 @@
     <script src="{% static 'jquery.min.js' %}"></script>
     <script src="{% static 'bootstrap.min.js' %}"></script>
     <script src="{% static 'scripts.js' %}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.2/dist/chart.min.js"></script>
+    <script src="{% static 'https://cdn.jsdelivr.net/npm/chart.js@3.8.2/dist/chart.min.js' %}"></script>
 
 </body>
 

@@ -13,6 +13,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 from pathlib import Path
 import os
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -24,10 +25,9 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-dhtj1p$m2t!a^jkwejulscr^e^fi9mwwbn*96sl@x9rs80dqi4'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -122,6 +122,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATICFILES_DIRS = (os.path.join(BASE_DIR, 'static'),)
 
+
 # Default primary key field type
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
@@ -134,7 +135,18 @@ CACHES = {
    }
 }
 
-CRONJOBS = [
-    ('0 0 * * *', 'myapp.cron.get_stock_info'),
-    ('0 12 * * *', 'myapp.cron.get_big_stock_info'),
+CRONJOBS = [    ('*/20 * * * *', 'python scripts/secondscript.py'),
 ]
+
+# CRONJOBS = [
+#     # ('*/20 * * * *', 'myapp.cron.get_stock_info'),
+     
+#     #  ('5 18 * * *','myapp.cron.stock_price_update'),
+#     #  ('* * * * *','myapp.cron.fix_round')
+#     # ('0 12 * * *', 'myapp.cron.get_big_stock_info'),
+#     # ('0 16 * * *', 'myapp.cron.sql_queries'),
+#      ('0 17 * * *', 'myapp.cron.grader'),
+#      ('0 18 * * *', 'myapp.cron.grader_2'),
+#      ('0 19 * * *', 'myapp.cron.grader_3'),
+#     #('* * * * *', 'myapp.cron.grader_4'),
+# ]
