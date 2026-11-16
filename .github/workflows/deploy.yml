@@ -1,6 +1,6 @@
 # Every change pushed to the v2 branch is tested, and if the tests pass it is
-# deployed to fly.io (nixreenr.com). Run it by hand from the Actions tab too; set
-# "deploy" to false there to only run the tests.
+# deployed to fly.io (nixreenr.com). Put "[no deploy]" in a commit message to only
+# run the tests, or "[skip ci]" to skip both.
 name: Test and deploy
 
 on:
@@ -31,7 +31,9 @@ jobs:
 
   deploy:
     needs: test
-    if: github.event_name == 'push' || inputs.deploy
+    if: >-
+      (github.event_name == 'push' && !contains(github.event.head_commit.message, '[no deploy]'))
+      || (github.event_name == 'workflow_dispatch' && inputs.deploy)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
