@@ -1,0 +1,41 @@
+# Every change pushed to the v2 branch is tested, and if the tests pass it is
+# deployed to fly.io (nixreenr.com). Run it by hand from the Actions tab too; set
+# "deploy" to false there to only run the tests.
+name: Test and deploy
+
+on:
+  push:
+    branches: [v2]
+  workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy to fly.io after the tests pass
+        type: boolean
+        default: true
+
+concurrency: deploy-fly  # one deploy at a time
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.14"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python manage.py test myapp
+        env:
+          DJANGO_DEBUG: "1"
+
+  deploy:
+    needs: test
+    if: github.event_name == 'push' || inputs.deploy
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: superfly/flyctl-actions/setup-flyctl@master
+      - run: flyctl deploy --remote-only --ha=false
+        env:
+          FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
