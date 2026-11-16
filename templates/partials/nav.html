@@ -1,0 +1,61 @@
+{% load static %}
+<header class="site-nav">
+    <a href="./" class="site-nav-logo"><img src="{% static 'long_logo_2.svg' %}" width="100" height="50" alt="Nixreenr home"></a>
+    <nav class="site-nav-links" aria-label="Main">
+        <a href="./about" class="btn btn-outline-custom btn-sm">about</a>
+        <a href="./beststocks" class="btn btn-outline-success btn-sm">top rated stocks</a>
+        <a href="./worststocks" class="btn btn-outline-danger btn-sm">low rated stocks</a>
+        <a href="./shortsqueeze" class="btn btn-outline-warning btn-sm">short squeeze</a>
+    </nav>
+    <form class="site-nav-search" method="GET" action="overview" role="search">
+        <input type="text" name="text" class="form-control rounded" placeholder="stock" aria-label="Stock ticker"
+               onfocus="this.select()" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false">
+        <button type="submit" class="btn btn-primary btn-sm">search</button>
+    </form>
+    <button type="button" class="site-nav-search-toggle" aria-label="Search for a stock" data-search-open>
+        <svg width="22" height="22" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+    </button>
+</header>
+
+<div class="search-overlay" id="search-overlay" role="dialog" aria-modal="true" aria-labelledby="search-overlay-label" hidden>
+    <form class="search-overlay-card" method="GET" action="overview" role="search">
+        <button type="button" class="search-overlay-close" aria-label="Close search" data-search-close>&times;</button>
+        <label for="search-overlay-input" id="search-overlay-label" class="search-overlay-label">Search a stock</label>
+        <input id="search-overlay-input" class="search-overlay-input" type="text" name="text" placeholder="Ticker, e.g. AAPL"
+               autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search">
+        <button type="submit" class="btn btn-primary search-overlay-submit">search</button>
+    </form>
+</div>
+<script>
+(function () {
+    var overlay = document.getElementById("search-overlay");
+    if (!overlay) {
+        return;
+    }
+    var input = overlay.querySelector("input");
+    function open() {
+        overlay.hidden = false;
+        document.body.style.overflow = "hidden";
+        input.value = "";
+        input.focus(); // same tap, so phones open the keyboard right away
+    }
+    function close() {
+        overlay.hidden = true;
+        document.body.style.overflow = "";
+    }
+    Array.prototype.forEach.call(document.querySelectorAll("[data-search-open]"), function (button) {
+        button.addEventListener("click", open);
+    });
+    overlay.querySelector("[data-search-close]").addEventListener("click", close);
+    overlay.addEventListener("click", function (event) {
+        if (event.target === overlay) {
+            close(); // tap outside the box
+        }
+    });
+    document.addEventListener("keydown", function (event) {
+        if (event.key === "Escape" && !overlay.hidden) {
+            close();
+        }
+    });
+})();
+</script>

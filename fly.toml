@@ -1,0 +1,43 @@
+# fly.io deployment. The site and the data-update scheduler run in one machine and
+# share the SQLite database on the volume. (The old setup kept the database inside
+# the image, so every deploy reset the data.)
+#
+# Secrets (not in this file):
+#   fly secrets set DJANGO_SECRET_KEY=... OPENAI_API_KEY=...
+
+app = "nixreenz"
+primary_region = "ewr"  # the volume and the machine must be in the same region
+
+[env]
+  DATABASE_PATH = "/data/db.sqlite3"
+  # Every address the site is served under, comma-separated.
+  DJANGO_ALLOWED_HOSTS = "nixreenz.fly.dev,nixreenr.com,www.nixreenr.com,wallstreetcrack.com,www.wallstreetcrack.com"
+  DJANGO_CSRF_TRUSTED_ORIGINS = "https://nixreenz.fly.dev,https://nixreenr.com,https://www.nixreenr.com,https://wallstreetcrack.com,https://www.wallstreetcrack.com"
+
+[mounts]
+  source = "analynix_data"
+  destination = "/data"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  # Keep one machine running so the scheduled data updates happen.
+  auto_stop_machines = "off"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [[http_service.checks]]
+    interval = "30s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "GET"
+    path = "/about"
+    # The site only answers to its own host names (DJANGO_ALLOWED_HOSTS), and the
+    # check would otherwise arrive addressed to the machine's private IP.
+    [http_service.checks.headers]
+      Host = "nixreenz.fly.dev"
+
+[[vm]]
+  memory = "1gb"
+  cpu_kind = "shared"
+  cpus = 1

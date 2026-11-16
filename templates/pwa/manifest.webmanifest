@@ -1,0 +1,16 @@
+{% load static %}{
+  "id": "/",
+  "name": "Nixreenr",
+  "short_name": "Nixreenr",
+  "description": "U.S. stocks graded against their industry peers.",
+  "start_url": "/?source=homescreen",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#1f2d35",
+  "theme_color": "#1f2d35",
+  "icons": [
+    {"src": "{% static 'icons/icon-192.png' %}", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "{% static 'icons/icon-512.png' %}", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "{% static 'icons/icon-maskable-512.png' %}", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ]
+}

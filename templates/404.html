@@ -1,0 +1,100 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <meta property="og:title" content="AI-Powered Stock Analytics and Screener" />
+    <meta property="og:image" content="{% static 'preview.png' %}" />
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+    {% include "pwa/head.html" %}
+
+    <meta name="description" content="This is an equity research webpage developed by Nick Lastihenos with the purpose of making investing more accessible by providing a fast, yet thoroughly curated perspective on how equities are priced.">
+    <meta name="author" content="Nick Lastihenos">
+
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'style13.css' %}" rel="stylesheet">
+    <link href="{% static 'app.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+    <div class="container-fluid enterbox">
+
+        <div class="row mt-5">
+            <div class = "container d-flex justify-content-center align-items-center pt-lg-5 mt-5 mb-lg-5">
+            <img src="{% static 'wrong_long_logo.svg' %}" width="200%" class="ml-lg-5 pr-lg-5 mb-sm-5" height="200%">
+            </div>
+        </div>
+
+        <div class="text-center" style="border-radius: 15px;">
+            <div class="mb-4">
+            <h6><span class="bolded" style="color:rgb(175, 212, 239);">Why?</span></h6>
+            <h6 style="color:white;">
+                Analynix rates the stocks listed on finviz (NYSE, NASDAQ and AMEX), leaving out funds and shell companies, and refreshes the list every week. A ticker that was just listed, delisted or renamed may not be here yet.
+                <br><br>
+            </h6>
+        </div>
+        
+        <div class="row">
+            <div class = "container d-flex justify-content-center align-items-center">
+                <form id="registerForm" method="GET" action="overview">
+                    <div class="input-group">
+                    <input type="text" class="text-center rounded mr-1" name="text" id="text" aria-label="Stock ticker" autocapitalize="characters" autocomplete="off" autocorrect="off" spellcheck="false" enterkeyhint="search" onFocus="this.select()" autofocus="autofocus" style="text-transform:uppercase" value="{{stock}}">
+                    <div class="input-group-append ">
+                        <button type="submit" class="btn btn-custom rounded ml-1">search</button>
+                    </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="row mt-3">
+            <div class = "container d-flex justify-content-center align-items-center">
+                <a href="./beststocks"><button type="button" class="btn btn-outline-success">top rated stocks</button></a>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class = "container d-flex justify-content-center align-items-center">
+                <a href="./worststocks"><button type="button" class="btn btn-outline-danger">low rated stocks</button></a>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class = "container d-flex justify-content-center align-items-center">
+                <a href="./shortsqueeze"><button type="button" class="btn btn-outline-warning">short squeeze</button></a>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class = "container d-flex justify-content-center align-items-center">
+                <a href="./about"><button type="button" class="btn btn-outline-custom">about</button></a>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="row pt-sm-5">
+</div>
+<div class="row pt-sm-5">
+</div>
+    <div class="row pt-5 mt-5">
+        <div class="col-12 text-center">
+            <p><span class="bolded" style="color:rgb(238, 97, 72)">Disclaimer:</span><span style="color: white;">&nbspNot financial advice</span></p>
+        </div>
+    </div>
+
+
+{% include "pwa/install_prompt.html" %}
+</body>
+
+</html>

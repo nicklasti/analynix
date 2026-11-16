@@ -1,0 +1,84 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <meta property="og:title" content="AI-Powered Stock Analytics and Screener" />
+    <meta property="og:image" content="{% static 'preview.png' %}" />
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+    {% include "pwa/head.html" %}
+
+    <meta name="description" content="Privacy policy for Nixreenr.">
+    <meta name="author" content="Nick Lastihenos">
+
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'style13.css' %}" rel="stylesheet">
+    <link href="{% static 'app.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+    {% include "partials/nav.html" %}
+
+    <div class = "container-fluid align-items-left justify-content-center">
+        <div class="row mt-2 mb-3 mb-sm-3 justify-content-sm-center">
+            <div class="col-12 col-sm-12 mb-1 mb-sm-1 p-sm-3 text-center justify-content-sm-center text-sm-center " style="color: white;background-color: #1f2d35; border-radius: 45px;">
+                <h6 class="pl-4 pt-3 pb-3 bolded">Privacy Policy</h6>
+            </div>
+            <div class="mr-2 ml-2">
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <div class="mb-4">
+                        <h6><span class="bolded" style="color:rgb(175, 212, 239);">What this site collects</span></h6>
+                    </div>
+                    <h6 style="color:white; line-height: 1.6;">
+                        There are no accounts or sign-ups, and the site doesn't ask for personal information.
+                        <br><br>
+                        Like most websites, the server keeps standard request logs (IP address, browser type and pages visited) for security and troubleshooting.
+                    </h6>
+                </div>
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <div class="mb-4">
+                        <h6><span class="bolded" style="color:rgb(175, 212, 239);">Advertising</span></h6>
+                    </div>
+                    <h6 style="color:white; line-height: 1.6;">
+                        This site shows ads from Google AdSense. Google and its partners use cookies to show ads based on your visits to this and other websites. See <a href="https://policies.google.com/technologies/partner-sites" target="_blank" rel="noopener noreferrer">how Google uses information from sites that use its services</a>.
+                        <br><br>
+                        You can turn off personalized ads in <a href="https://adssettings.google.com" target="_blank" rel="noopener noreferrer">Google's Ads Settings</a>, or opt out of other vendors' cookies at <a href="https://www.aboutads.info/choices" target="_blank" rel="noopener noreferrer">aboutads.info</a>.
+                    </h6>
+                </div>
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <div class="mb-4">
+                        <h6><span class="bolded" style="color:rgb(175, 212, 239);">Home screen app</span></h6>
+                    </div>
+                    <h6 style="color:white; line-height: 1.6;">
+                        If you add the site to your home screen, it opens like an app. Nothing personal is stored on your device.
+                    </h6>
+                </div>
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <div class="mb-4">
+                        <h6><span class="bolded" style="color:rgb(175, 212, 239);">Contact</span></h6>
+                    </div>
+                    <h6 style="color:white; line-height: 1.6;">
+                        Questions: <a href="mailto:nick@nixreenr.com">nick@nixreenr.com</a>
+                        <br><br>
+                        Last updated November 16, 2026.
+                    </h6>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% include "pwa/install_prompt.html" %}
+</body>
+
+</html>

@@ -1,0 +1,138 @@
+{% load static %}
+<div id="install-prompt" class="install-prompt" role="dialog" aria-labelledby="install-prompt-title" hidden>
+    <img src="{% static 'icons/icon-192.png' %}" alt="" width="52" height="52" class="install-prompt-icon">
+    <div class="install-prompt-text">
+        <p id="install-prompt-title" class="install-prompt-title">Switch to the web app?</p>
+        <p class="install-prompt-body">No download needed. Add it to your home screen for a cleaner, full-screen view.</p>
+        <p class="install-prompt-ios" hidden>
+            Tap
+            <svg width="16" height="20" viewBox="0 0 16 20" aria-label="Share" role="img" class="install-prompt-share"><path d="M8 1v11M4 5l4-4 4 4M3 8H1v11h14V8h-2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <strong>Share</strong>, then <strong>Add to Home Screen</strong>.
+        </p>
+        <div class="install-prompt-actions">
+            <button type="button" class="btn btn-primary btn-sm" data-install>Add to Home Screen</button>
+            <button type="button" class="btn btn-outline-custom btn-sm" data-dismiss>Not now</button>
+        </div>
+    </div>
+</div>
+<style>
+    .install-prompt {
+        position: fixed;
+        left: 50%;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        transform: translateX(-50%);
+        z-index: 2147483000;
+        width: calc(100% - 32px);
+        max-width: 460px;
+        display: flex;
+        gap: 14px;
+        align-items: flex-start;
+        padding: 18px;
+        background: #293b45;
+        color: #fff;
+        border-radius: 15px;
+        box-shadow: 0 8px 30px rgba(0, 0, 0, 0.45);
+        font-family: verdana, sans-serif;
+    }
+    .install-prompt[hidden], .install-prompt [hidden] { display: none !important; }
+    .install-prompt-icon { border-radius: 12px; flex: none; }
+    .install-prompt-title { margin: 0 0 4px; font-weight: bold; }
+    .install-prompt-body, .install-prompt-ios { margin: 0 0 12px; color: rgb(179, 197, 210); font-size: 14px; line-height: 1.4; }
+    .install-prompt-ios { color: #fff; }
+    .install-prompt-share { vertical-align: -3px; color: #7c9cec; }
+    .install-prompt-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+</style>
+<script>
+(function () {
+    if ("serviceWorker" in navigator) {
+        window.addEventListener("load", function () {
+            navigator.serviceWorker.register("/sw.js").catch(function () {});
+        });
+    }
+
+    var prompt = document.getElementById("install-prompt");
+    var standalone = window.matchMedia("(display-mode: standalone)").matches || window.navigator.standalone === true;
+    if (!prompt || standalone) {
+        return; // already running as the home-screen app
+    }
+
+    // "Not now" hides the popup for two weeks.
+    var KEY = "installPromptDismissedAt";
+    var WAIT = 14 * 24 * 60 * 60 * 1000;
+    try {
+        var dismissedAt = Number(localStorage.getItem(KEY) || 0);
+        if (dismissedAt && Date.now() - dismissedAt < WAIT) {
+            return;
+        }
+    } catch (error) {}
+
+    var installButton = prompt.querySelector("[data-install]");
+    var dismissButton = prompt.querySelector("[data-dismiss]");
+    var deferredInstall = null;
+
+    // Some pages start zoomed out to 50% on phones (initial-scale=0.5), which would
+    // shrink the popup and can push it off the bottom. Pin it to the visible part of
+    // the screen and undo the zoom, so it always shows at normal size.
+    function place() {
+        var view = window.visualViewport;
+        if (!view || prompt.hidden) {
+            return;
+        }
+        var unzoom = 1 / view.scale;
+        prompt.style.width = Math.min(view.width * view.scale - 32, 460) + "px";
+        prompt.style.left = view.offsetLeft + view.width / 2 + "px";
+        prompt.style.top = view.offsetTop + view.height - 16 * unzoom + "px";
+        prompt.style.bottom = "auto";
+        prompt.style.transformOrigin = "bottom center";
+        prompt.style.transform = "translate(-50%, -100%) scale(" + unzoom + ")";
+    }
+    if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", place);
+        window.visualViewport.addEventListener("scroll", place);
+    }
+
+    function show() {
+        prompt.hidden = false;
+        place();
+    }
+    function hide(remember) {
+        prompt.hidden = true;
+        if (remember) {
+            try { localStorage.setItem(KEY, String(Date.now())); } catch (error) {}
+        }
+    }
+    dismissButton.addEventListener("click", function () { hide(true); });
+
+    var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent) ||
+        (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+    if (isIOS) {
+        // Safari has no install button for websites, so show the two taps instead.
+        prompt.querySelector(".install-prompt-ios").hidden = false;
+        installButton.hidden = true;
+        dismissButton.textContent = "Got it";
+        setTimeout(show, 800);
+        return;
+    }
+
+    if (!window.matchMedia("(pointer: coarse)").matches) {
+        installButton.textContent = "Install app"; // desktop browsers install to the dock / start menu
+    }
+    // Chrome, Edge and Samsung Internet fire this when the site can be installed.
+    window.addEventListener("beforeinstallprompt", function (event) {
+        event.preventDefault();
+        deferredInstall = event;
+        show();
+    });
+    installButton.addEventListener("click", function () {
+        if (!deferredInstall) {
+            return;
+        }
+        deferredInstall.prompt();
+        deferredInstall.userChoice.then(function (choice) {
+            hide(choice.outcome !== "accepted");
+            deferredInstall = null;
+        });
+    });
+    window.addEventListener("appinstalled", function () { hide(false); });
+})();
+</script>

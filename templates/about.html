@@ -1,0 +1,95 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <meta property="og:title" content="AI-Powered Stock Analytics and Screener" />
+    <meta property="og:image" content="{% static 'preview.png' %}" />
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+    {% include "pwa/head.html" %}
+
+    <meta name="description" content="This is an equity research webpage developed by Nick Lastihenos with the purpose of making investing more accessible by providing a fast, yet thoroughly curated perspective on how equities are priced.">
+    <meta name="author" content="Nick Lastihenos">
+
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'style13.css' %}" rel="stylesheet">
+    <link href="{% static 'app.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+
+    {% include "partials/nav.html" %}
+
+    <div class = "container-fluid align-items-left justify-content-center">
+        <div class="row mt-2 mb-3 mb-sm-3 justify-content-sm-center">
+            <div class="col-12 col-sm-12 mb-1 mb-sm-1 p-sm-3 text-center justify-content-sm-center text-sm-center " style="color: white;background-color: #1f2d35; border-radius: 45px;">
+                <h6 class="pl-4 pt-3 pb-3 bolded">About</h6>
+            </div>
+            <div class="mr-2 ml-2">
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <div class="mb-4">
+                        <h6><span class="bolded" style="color:rgb(175, 212, 239);">About</span></h6>
+                    </div>
+                    <h6 style="color:white; line-height: 1.6;">
+                        Nixreenr grades U.S.-listed stocks against their industry peers using public market data.
+                        <br><br>
+                        Built by <a href="https://www.linkedin.com/in/nick-lasti/" target="_blank" rel="noopener noreferrer">Nick Lastihenos</a>.
+                    </h6>
+                </div>
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <div class="mb-4">
+                        <h6><span class="bolded" style="color:rgb(175, 212, 239);">How grades work</span></h6>
+                    </div>
+                    <h6 style="color:white; line-height: 1.6;">
+                        Each stock is ranked against its industry on eleven metrics: revenue, revenue growth, EBITDA growth, forward EPS growth, earnings, profit margin, P/E, forward P/E, EPS, P/S and P/B. Industries with too few stocks are compared with their sector instead.
+                        <br><br>
+                        Each ranking becomes a letter grade on a bell curve: roughly the top 3% get an A+, the middle 14% a C and the bottom 3% an F-. Missing data is skipped.
+                        <br><br>
+                        The Stock Rating combines all the metric grades with an AI analyst's grade and ranks the result against every stock. <span style="color:rgb(175, 212, 239);">Top Rated</span> means B or better; <span style="color:rgb(175, 212, 239);">Low Rated</span> means D or worse.
+                    </h6>
+                </div>
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <div class="mb-4">
+                        <h6><span class="bolded" style="color:rgb(175, 212, 239);">Data</span></h6>
+                    </div>
+                    <h6 style="color:white; line-height: 1.6;">
+                        Fundamentals and headlines come from <a href="https://finviz.com/" target="_blank" rel="noopener noreferrer">Finviz</a>, prices from <a href="https://finance.yahoo.com/" target="_blank" rel="noopener noreferrer">Yahoo Finance</a>, and the AI summaries from OpenAI. Prices refresh live when you open a stock. Headlines update every weeknight; fundamentals, grades and AI summaries every Saturday.
+                    </h6>
+                </div>
+                <div class="col-12 col-sm-12 mb-3 mb-sm-3 p-5 p-sm-5" style="background-color: #293b45; border-radius: 15px;">
+                    <h6><span class="bolded" style="color:rgb(238, 97, 72);">Not financial advice.</span>
+                        <span style="color: white;">&nbsp;&middot;&nbsp;</span><a href="./privacy">Privacy policy</a></h6>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="align-content-center justify-content-center text-center">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+        <!-- fatnshort -->
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-6980384461148480"
+            data-ad-slot="4497939517"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+
+{% include "pwa/install_prompt.html" %}
+</body>
+
+</html>

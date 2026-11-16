@@ -1,0 +1,11 @@
+.venv
+.venv/
+*.nosync
+__pycache__/
+*.pyc
+.env
+db.sqlite3
+db.sqlite3-*
+staticfiles/
+.DS_Store
+.ipynb_checkpoints/

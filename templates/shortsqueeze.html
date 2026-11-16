@@ -1,0 +1,168 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <meta property="og:title" content="AI-Powered Stock Analytics and Screener" />
+    <meta property="og:image" content="{% static 'preview.png' %}" />
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+    {% include "pwa/head.html" %}
+
+    <meta name="description" content="This is an equity research webpage developed by Nick Lastihenos with the purpose of making investing more accessible by providing a fast, yet thoroughly curated perspective on how equities are priced.">
+    <meta name="author" content="Nick Lastihenos">
+
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'style13.css' %}" rel="stylesheet">
+    <link href="{% static 'app.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+    <style>
+        .pagination {
+  display: inline-block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+    .pagination a {
+    color: white;
+    float: left;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #7c9cec;
+    background-color: #7c9cec;
+    margin: 0 4px;
+    }
+
+    .pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+    border: 1px solid #4CAF50;
+    }
+
+    .pagination a:hover:not(.active) {
+    background-color: #0747e8;
+    border-color: #0747e8;
+    border-radius: 35px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    }
+
+    /* Style for pagination at top of table */
+    .table-pagination-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    }
+
+    .table-pagination-top .pagination {
+    margin-top: 0;
+    margin-bottom: 0;
+    }
+
+    /* Style for pagination at bottom of table */
+    .table-pagination-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    }
+
+    .current-page {
+    color:white;
+    border-radius: 35px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    }
+    </style>
+    {% include "partials/nav.html" %}
+
+    <div class="align-content-center justify-content-center text-center">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+        <!-- longnskinny -->
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-6980384461148480"
+            data-ad-slot="5253134901"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+<div class="container-fluid align-items-center justify-content-center">
+    <section class="section">
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <h6 class="bolded pl-2 pt-2 pb-2" style="color:#7c9cec;">Highest Days to Cover</h6>
+                <div class="table-scroll">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col" class="phone-hide">Company</th>
+                            <th scope="col" class="phone-hide">Industry</th>
+                            <th scope="col">Days to Cover</th>
+                            <th scope="col">Short Float</th>
+                            <th scope="col" class="phone-hide">Mkt Cap</th>
+                            <th scope="col">Rating</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stock in stocks %}
+                        <tr>
+                            <td>{{ forloop.counter }}</td>
+                            <td><a href="./overview?text={{stock.name}}">{{stock.name}}</a><span class="phone-only company-under">{{stock.company_name}}</span></td>
+                            <td class="phone-hide">{{stock.company_name}}</td>
+                            <td class="phone-hide">{{stock.industry}}</td>
+                            <td>{{stock.dtc|floatformat:2}}</td>
+                            <td>{{stock.short_float}}</td>
+                            <td class="phone-hide">{{stock.mkt_cap_short}}</td>
+                            <td>{{stock.grade_buttons.overall_grade}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+{% include "pwa/install_prompt.html" %}
+</body>
+<div class="align-content-center justify-content-center text-center">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+    crossorigin="anonymous"></script>
+    <!-- longnskinny -->
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-6980384461148480"
+        data-ad-slot="5253134901"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+</html>

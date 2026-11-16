@@ -1,0 +1,264 @@
+/* Phone layout and the shared top menu. Loaded after style13.css on every page;
+   on desktop the site looks the same as before. */
+
+/* The page only scrolls up and down: no sideways drifting or rubber-banding. */
+html,
+body {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+body {
+    overscroll-behavior: none;
+    touch-action: manipulation; /* no double-tap zoom delay on buttons */
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+}
+/* Opened from the home screen on an iPhone: keep clear of the notch and home bar. */
+@media (display-mode: standalone) {
+    body {
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+}
+
+/* ---- Top menu ---------------------------------------------------------- */
+
+.site-nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px 10px;
+    margin: 16px 8px 8px;
+    padding: 8px 18px;
+    background-color: #293b45;
+    border-radius: 35px;
+}
+.site-nav-logo img {
+    display: block;
+}
+.site-nav-links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    flex: 1 1 auto;
+}
+.site-nav-search {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0 0 0 auto;
+}
+.site-nav-search .form-control {
+    width: 170px;
+    height: 31px;
+    font-size: 14px;
+}
+.site-nav-search-toggle {
+    display: none;
+}
+
+@media (max-width: 767.98px) {
+    .site-nav {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 12px;
+        margin: 10px 8px 8px;
+        padding: 10px 14px 14px;
+        border-radius: 24px;
+    }
+    .site-nav-logo {
+        grid-column: 1;
+        grid-row: 1;
+        align-self: center;
+    }
+    .site-nav-search-toggle {
+        grid-column: 2;
+        grid-row: 1;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 46px;
+        height: 46px;
+        border: 1px solid #0275d8;
+        border-radius: 50%;
+        background: transparent;
+        color: #7c9cec;
+    }
+    .site-nav-links {
+        grid-column: 1 / -1;
+        grid-row: 2;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+    }
+    .site-nav-links .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 44px;
+        font-size: 15px;
+        line-height: 1.2;
+        white-space: normal;
+    }
+    .site-nav-search {
+        display: none;
+    }
+}
+
+/* ---- Search popup (the magnifier on phones) ----------------------------- */
+
+.search-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 2147483001;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: calc(72px + env(safe-area-inset-top)) 16px 16px;
+    background: rgba(31, 45, 53, 0.97);
+}
+.search-overlay[hidden] {
+    display: none !important;
+}
+.search-overlay-card {
+    position: relative;
+    width: 100%;
+    max-width: 420px;
+    padding: 26px 22px 22px;
+    background-color: #293b45;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.45);
+}
+.search-overlay-label {
+    display: block;
+    margin: 0 0 12px;
+    color: #fff;
+    font-weight: bold;
+}
+.search-overlay-input {
+    display: block;
+    width: 100%;
+    height: 54px;
+    padding: 0 16px;
+    border: 0;
+    border-radius: 12px;
+    font-size: 20px; /* 16px or more, so iPhones don't zoom in when typing */
+    text-transform: uppercase;
+}
+.search-overlay-input::placeholder {
+    text-transform: none;
+}
+.search-overlay-submit {
+    display: block;
+    width: 100%;
+    height: 50px;
+    margin-top: 12px;
+    border-radius: 12px;
+    font-size: 17px;
+}
+.search-overlay-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    width: 44px;
+    height: 44px;
+    border: 0;
+    background: transparent;
+    color: rgb(179, 197, 210);
+    font-size: 30px;
+    line-height: 1;
+}
+
+/* ---- Tables ------------------------------------------------------------ */
+
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+/* ---- Phones ------------------------------------------------------------- */
+
+@media (max-width: 575.98px) {
+    /* Bootstrap's large paddings leave little room for text on a phone. */
+    .p-5 {
+        padding: 1.25rem !important;
+    }
+    .pl-5 {
+        padding-left: 1rem !important;
+    }
+    .pr-5 {
+        padding-right: 1rem !important;
+    }
+    .table {
+        font-size: 13px;
+    }
+    .table th,
+    .table td {
+        padding: 0.55rem 0.25rem;
+    }
+    .table .btn {
+        padding: 3px 6px;
+        font-size: 12px;
+    }
+    .table thead th {
+        font-size: 11px;
+    }
+    .phone-hide {
+        display: none !important;
+    }
+}
+
+/* Home and "not found" pages: the centred logo, search box and big buttons. */
+@media (max-width: 767.98px) {
+    .enterbox {
+        max-width: 100%;
+        height: auto;
+    }
+    .enterbox img {
+        display: block;
+        width: 100%;
+        max-width: 460px;
+        height: auto;
+        margin: 28px auto 20px !important;
+        padding: 0 !important;
+    }
+    .enterbox form .input-group {
+        flex-wrap: nowrap;
+        width: calc(100vw - 48px);
+        max-width: 340px;
+    }
+    .enterbox input[name="text"] {
+        flex: 1 1 auto;
+        min-width: 0;
+        height: 46px;
+        font-size: 18px;
+    }
+    .enterbox form .btn {
+        height: 46px;
+        padding: 0 18px;
+        font-size: 16px;
+    }
+    .enterbox a .btn {
+        min-width: 240px;
+        min-height: 46px;
+        font-size: 16px;
+    }
+}
+
+/* Stock lists on phones: the company name sits under the ticker instead of in its own column. */
+.phone-only {
+    display: none;
+}
+@media (max-width: 575.98px) {
+    .phone-only {
+        display: block;
+    }
+    .company-under {
+        margin-top: 2px;
+        max-width: 104px;
+        color: rgb(179, 197, 210);
+        font-size: 11px;
+        line-height: 1.25;
+    }
+}

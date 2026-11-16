@@ -1,0 +1,205 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    
+    <meta property="og:title" content="AI-Powered Stock Analytics and Screener" />
+    <meta property="og:image" content="{% static 'preview.png' %}" />
+
+    <title>Nixreenr</title>
+    <link rel="shortcut icon" type="image/svg" href="{% static 'logo.svg' %}"/>
+    {% include "pwa/head.html" %}
+
+    <meta name="description" content="This is an equity research webpage developed by Nick Lastihenos with the purpose of making investing more accessible by providing a fast, yet thoroughly curated perspective on how equities are priced.">
+    <meta name="author" content="Nick Lastihenos">
+
+    <link href="{% static 'bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'style13.css' %}" rel="stylesheet">
+    <link href="{% static 'app.css' %}" rel="stylesheet">
+
+</head>
+
+<body>
+    <style>
+        .pagination {
+  display: inline-block;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+    .pagination a {
+    color: white;
+    float: left;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    text-decoration: none;
+    transition: background-color .3s;
+    border: 1px solid #7c9cec;
+    background-color: #7c9cec;
+    margin: 0 4px;
+    }
+
+    .pagination a.active {
+    background-color: #4CAF50;
+    color: white;
+    border: 1px solid #4CAF50;
+    }
+
+    .pagination a:hover:not(.active) {
+    background-color: #0747e8;
+    border-color: #0747e8;
+    border-radius: 35px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    }
+
+    /* Style for pagination at top of table */
+    .table-pagination-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    }
+
+    .table-pagination-top .pagination {
+    margin-top: 0;
+    margin-bottom: 0;
+    }
+
+    /* Style for pagination at bottom of table */
+    .table-pagination-bottom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 20px;
+    }
+
+    .current-page {
+    color:white;
+    border-radius: 35px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+    }
+    </style>
+    {% include "partials/nav.html" %}
+
+    <div class="align-content-center justify-content-center text-center">
+        <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+        crossorigin="anonymous"></script>
+        <!-- longnskinny -->
+        <ins class="adsbygoogle"
+            style="display:block"
+            data-ad-client="ca-pub-6980384461148480"
+            data-ad-slot="5253134901"
+            data-ad-format="auto"
+            data-full-width-responsive="true"></ins>
+        <script>
+            (adsbygoogle = window.adsbygoogle || []).push({});
+        </script>
+    </div>
+
+<div class="container-fluid align-items-center justify-content-center">
+    <section class="section">
+        <div class="row mt-3">
+            <div class="col-md-12">
+                <div class="table-pagination-top">
+                    <span class="current-page">
+                        <span class="bolded" style="color:#7c9cec;">Page:</span> {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+                    </span>
+                    <div class="pagination">
+                        <span class="step-links">
+                            {% if page_obj.has_previous %}
+                                <a href="?page=1">&laquo; first</a>
+                                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+                            {% endif %}
+
+                            {% if page_obj.has_next %}
+                                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                <div class="table-scroll">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">Stock</th>
+                            <th scope="col" class="phone-hide">Company</th>
+                            <th scope="col" class="phone-hide">Industry</th>
+                            <th scope="col">Rating</th>
+                            <th scope="col" class="phone-hide">Mkt Cap</th>
+                            <th scope="col">P/E (TTM)</th>
+                            <th scope="col">P/B (MRQ)</th>
+                            <th scope="col">P/S (TTM)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stock in worst_stock_list %}
+                        <tr>
+                            <td>{{ page_obj.start_index|add:forloop.counter0 }}</td>
+                            <td><a href="./overview?text={{stock.name}}">{{stock.name}}</a><span class="phone-only company-under">{{stock.company_name}}</span></td>
+                            <td class="phone-hide">{{stock.company_name}}</td>
+                            <td class="phone-hide">{{stock.industry}}</td>
+                            <td>{{stock.grade_buttons.overall_grade}}</td>
+                            <td class="phone-hide">{{stock.mkt_cap_short}}</td>
+                            <td>{{stock.grade_buttons.pe_grade}}</td>
+                            <td>{{stock.grade_buttons.pb_grade}}</td>
+                            <td>{{stock.grade_buttons.ps_grade}}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+
+{% include "pwa/install_prompt.html" %}
+</body>
+<div class="table-pagination-top pr-3 pl-3">
+    <span class="current-page">
+        <span class="bolded" style="color:#7c9cec;">Page:</span> {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}
+    </span>
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+<div class="align-content-center justify-content-center text-center">
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6980384461148480"
+    crossorigin="anonymous"></script>
+    <!-- longnskinny -->
+    <ins class="adsbygoogle"
+        style="display:block"
+        data-ad-client="ca-pub-6980384461148480"
+        data-ad-slot="5253134901"
+        data-ad-format="auto"
+        data-full-width-responsive="true"></ins>
+    <script>
+        (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+</div>
+</html>
